@@ -23,11 +23,11 @@ func shouldRecord(transition state.StateTransition) bool {
 	}
 
 	// Do not log not transitioned states normal states if it was marked as stale
-	if transition.StateReason == models.StateReasonMissingSeries && transition.PreviousState == eval.Normal && transition.State.State == eval.Normal {
+	if transition.StateReason == models.StateReasonMissingSeries && transition.PreviousState == eval.Normal && transition.State.EvaluationState == eval.Normal {
 		return false
 	}
 	// Do not log transition from Normal (Paused|Updated) to Normal
-	if transition.State.State == eval.Normal && transition.StateReason == "" &&
+	if transition.State.EvaluationState == eval.Normal && transition.StateReason == "" &&
 		transition.PreviousState == eval.Normal && (transition.PreviousStateReason == models.StateReasonPaused || transition.PreviousStateReason == models.StateReasonUpdated) {
 		return false
 	}
@@ -48,7 +48,7 @@ func ShouldRecordAnnotation(t state.StateTransition) bool {
 	}
 
 	// Do not record transitions between Normal and Normal (NoData)
-	if t.State.State == eval.Normal && t.PreviousState == eval.Normal {
+	if t.State.EvaluationState == eval.Normal && t.PreviousState == eval.Normal {
 		if (t.State.StateReason == "" && t.PreviousStateReason == models.StateReasonNoData) ||
 			(t.State.StateReason == models.StateReasonNoData && t.PreviousStateReason == "") {
 			return false

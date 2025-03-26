@@ -42,24 +42,24 @@ func TestSetAlerting(t *testing.T) {
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:       eval.Alerting,
-			StateReason: "this is a reason",
-			StartsAt:    mock.Now(),
-			EndsAt:      mock.Now().Add(time.Minute),
+			EvaluationState: eval.Alerting,
+			StateReason:     "this is a reason",
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}, {
 		name: "previous state is removed",
 		state: State{
-			State:       eval.Normal,
-			StateReason: "this is a reason",
-			Error:       errors.New("this is an error"),
+			EvaluationState: eval.Normal,
+			StateReason:     "this is a reason",
+			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:    eval.Alerting,
-			StartsAt: mock.Now(),
-			EndsAt:   mock.Now().Add(time.Minute),
+			EvaluationState: eval.Alerting,
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}}
 
@@ -87,24 +87,24 @@ func TestSetPending(t *testing.T) {
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:       eval.Pending,
-			StateReason: "this is a reason",
-			StartsAt:    mock.Now(),
-			EndsAt:      mock.Now().Add(time.Minute),
+			EvaluationState: eval.Pending,
+			StateReason:     "this is a reason",
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}, {
 		name: "previous state is removed",
 		state: State{
-			State:       eval.Pending,
-			StateReason: "this is a reason",
-			Error:       errors.New("this is an error"),
+			EvaluationState: eval.Pending,
+			StateReason:     "this is a reason",
+			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:    eval.Pending,
-			StartsAt: mock.Now(),
-			EndsAt:   mock.Now().Add(time.Minute),
+			EvaluationState: eval.Pending,
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}}
 
@@ -132,24 +132,24 @@ func TestNormal(t *testing.T) {
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:       eval.Normal,
-			StateReason: "this is a reason",
-			StartsAt:    mock.Now(),
-			EndsAt:      mock.Now().Add(time.Minute),
+			EvaluationState: eval.Normal,
+			StateReason:     "this is a reason",
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}, {
 		name: "previous state is removed",
 		state: State{
-			State:       eval.Normal,
-			StateReason: "this is a reason",
-			Error:       errors.New("this is an error"),
+			EvaluationState: eval.Normal,
+			StateReason:     "this is a reason",
+			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:    eval.Normal,
-			StartsAt: mock.Now(),
-			EndsAt:   mock.Now().Add(time.Minute),
+			EvaluationState: eval.Normal,
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}}
 
@@ -176,23 +176,23 @@ func TestNoData(t *testing.T) {
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:    eval.NoData,
-			StartsAt: mock.Now(),
-			EndsAt:   mock.Now().Add(time.Minute),
+			EvaluationState: eval.NoData,
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}, {
 		name: "previous state is removed",
 		state: State{
-			State:       eval.NoData,
-			StateReason: "this is a reason",
-			Error:       errors.New("this is an error"),
+			EvaluationState: eval.NoData,
+			StateReason:     "this is a reason",
+			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		expected: State{
-			State:    eval.NoData,
-			StartsAt: mock.Now(),
-			EndsAt:   mock.Now().Add(time.Minute),
+			EvaluationState: eval.NoData,
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}}
 
@@ -220,28 +220,28 @@ func TestSetError(t *testing.T) {
 		endsAt:   mock.Now().Add(time.Minute),
 		error:    errors.New("this is an error"),
 		expected: State{
-			State:       eval.Error,
-			StateReason: ngmodels.StateReasonError,
-			Error:       errors.New("this is an error"),
-			StartsAt:    mock.Now(),
-			EndsAt:      mock.Now().Add(time.Minute),
+			EvaluationState: eval.Error,
+			StateReason:     ngmodels.StateReasonError,
+			Error:           errors.New("this is an error"),
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}, {
 		name: "previous state is removed",
 		state: State{
-			State:       eval.Error,
-			StateReason: "this is a reason",
-			Error:       errors.New("this is an error"),
+			EvaluationState: eval.Error,
+			StateReason:     "this is a reason",
+			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		error:    errors.New("this is another error"),
 		expected: State{
-			State:       eval.Error,
-			StateReason: ngmodels.StateReasonError,
-			Error:       errors.New("this is another error"),
-			StartsAt:    mock.Now(),
-			EndsAt:      mock.Now().Add(time.Minute),
+			EvaluationState: eval.Error,
+			StateReason:     ngmodels.StateReasonError,
+			Error:           errors.New("this is another error"),
+			StartsAt:        mock.Now(),
+			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}}
 
@@ -259,13 +259,13 @@ func TestMaintain(t *testing.T) {
 	now := mock.Now()
 
 	// the interval is less than the resend interval of 30 seconds
-	s := State{State: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
+	s := State{EvaluationState: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
 	s.Maintain(10, now.Add(10*time.Second))
 	// 10 seconds + 4 x 30 seconds is 130 seconds
 	assert.Equal(t, now.Add(130*time.Second), s.EndsAt)
 
 	// the interval is above the resend interval of 30 seconds
-	s = State{State: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
+	s = State{EvaluationState: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
 	s.Maintain(60, now.Add(10*time.Second))
 	// 10 seconds + 4 x 60 seconds is 250 seconds
 	assert.Equal(t, now.Add(250*time.Second), s.EndsAt)
@@ -365,7 +365,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 1 * time.Minute,
 			expected:    true,
 			testState: &State{
-				State:              eval.Alerting,
+				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-2 * time.Minute)),
 			},
@@ -375,7 +375,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 1 * time.Minute,
 			expected:    false,
 			testState: &State{
-				State:              eval.Alerting,
+				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime),
 			},
@@ -385,7 +385,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 1 * time.Minute,
 			expected:    true,
 			testState: &State{
-				State:              eval.Alerting,
+				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
 			},
@@ -395,7 +395,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 1 * time.Minute,
 			expected:    false,
 			testState: &State{
-				State: eval.Pending,
+				EvaluationState: eval.Pending,
 			},
 		},
 		{
@@ -403,7 +403,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 0 * time.Minute,
 			expected:    true,
 			testState: &State{
-				State:              eval.Alerting,
+				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime),
 			},
@@ -413,7 +413,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 1 * time.Minute,
 			expected:    true,
 			testState: &State{
-				State:              eval.Normal,
+				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime),
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -425,7 +425,7 @@ func TestNeedsSending(t *testing.T) {
 			resolvedRetention: 15 * time.Minute,
 			expected:          true,
 			testState: &State{
-				State:              eval.Normal,
+				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime.Add(-2 * time.Minute)),
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -437,7 +437,7 @@ func TestNeedsSending(t *testing.T) {
 			resolvedRetention: 15 * time.Minute,
 			expected:          false,
 			testState: &State{
-				State:              eval.Normal,
+				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime.Add(-2 * time.Minute)),
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -449,7 +449,7 @@ func TestNeedsSending(t *testing.T) {
 			resolvedRetention: 15 * time.Minute,
 			expected:          false,
 			testState: &State{
-				State:              eval.Normal,
+				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime.Add(-16 * time.Minute)),
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -460,7 +460,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay: 1 * time.Minute,
 			expected:    false,
 			testState: &State{
-				State:              eval.Normal,
+				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(time.Time{}),
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -471,7 +471,7 @@ func TestNeedsSending(t *testing.T) {
 			expected:    true,
 			resendDelay: 1 * time.Minute,
 			testState: &State{
-				State:              eval.NoData,
+				EvaluationState:    eval.NoData,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
 			},
@@ -481,7 +481,7 @@ func TestNeedsSending(t *testing.T) {
 			expected:    false,
 			resendDelay: 1 * time.Minute,
 			testState: &State{
-				State:              eval.NoData,
+				EvaluationState:    eval.NoData,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-time.Duration(rand.Int63n(59)+1) * time.Second)),
 			},
@@ -491,7 +491,7 @@ func TestNeedsSending(t *testing.T) {
 			expected:    true,
 			resendDelay: 1 * time.Minute,
 			testState: &State{
-				State:              eval.Error,
+				EvaluationState:    eval.Error,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
 			},
@@ -501,7 +501,7 @@ func TestNeedsSending(t *testing.T) {
 			expected:    false,
 			resendDelay: 1 * time.Minute,
 			testState: &State{
-				State:              eval.Error,
+				EvaluationState:    eval.Error,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-time.Duration(rand.Int63n(59)+1) * time.Second)),
 			},
@@ -994,7 +994,7 @@ func TestNewState(t *testing.T) {
 		assert.Equal(t, rule.OrgID, state.OrgID)
 		assert.Equal(t, rule.UID, state.AlertRuleUID)
 		assert.Equal(t, state.Labels.Fingerprint(), state.CacheID)
-		assert.Equal(t, result.State, state.State)
+		assert.Equal(t, result.State, state.EvaluationState)
 		assert.Equal(t, "", state.StateReason)
 		assert.Equal(t, result.Instance.Fingerprint(), state.ResultFingerprint)
 		assert.Nil(t, state.LatestResult)
@@ -1036,7 +1036,7 @@ func TestPatch(t *testing.T) {
 		assert.Equal(t, orig.LastEvaluationTime, state.LastEvaluationTime)
 		assert.Equal(t, orig.EvaluationDuration, state.EvaluationDuration)
 
-		assert.Equal(t, current.State, state.State)
+		assert.Equal(t, current.EvaluationState, state.EvaluationState)
 		assert.Equal(t, current.StateReason, state.StateReason)
 		assert.Equal(t, current.Image, state.Image)
 		assert.Equal(t, current.LatestResult, state.LatestResult)
@@ -1068,7 +1068,7 @@ func TestPatch(t *testing.T) {
 		patch(&state, &current, result)
 
 		assert.EqualValues(t, expectedAnnotations, state.Annotations)
-		assert.Equal(t, current.State, state.State)
+		assert.Equal(t, current.EvaluationState, state.EvaluationState)
 		assert.Equal(t, current.StateReason, state.StateReason)
 		assert.Equal(t, current.Image, state.Image)
 		assert.Equal(t, current.LatestResult, state.LatestResult)
@@ -1094,7 +1094,7 @@ func TestPatch(t *testing.T) {
 		state := randomSate(key)
 		orig := state.Copy()
 		current := randomSate(key)
-		current.State = eval.Error
+		current.EvaluationState = eval.Error
 		current.Labels["datasource_uid"] = util.GenerateShortUID()
 		current.Labels["ref_id"] = util.GenerateShortUID()
 
@@ -1110,7 +1110,7 @@ func TestPatch(t *testing.T) {
 		patch(&state, &current, result)
 
 		assert.Equal(t, expectedLabels, state.Labels)
-		assert.Equal(t, current.State, state.State)
+		assert.Equal(t, current.EvaluationState, state.EvaluationState)
 		assert.Equal(t, current.StateReason, state.StateReason)
 		assert.Equal(t, current.Image, state.Image)
 		assert.Equal(t, current.LatestResult, state.LatestResult)

@@ -272,7 +272,7 @@ func TestRouteGetAlertStatuses(t *testing.T) {
 
 func withAlertingState() forEachState {
 	return func(s *state.State) *state.State {
-		s.State = eval.Alerting
+		s.EvaluationState = eval.Alerting
 		s.LatestResult = &state.Evaluation{
 			EvaluationState: eval.Alerting,
 			EvaluationTime:  timeNow(),
@@ -285,7 +285,7 @@ func withAlertingState() forEachState {
 
 func withRecoveringState() forEachState {
 	return func(s *state.State) *state.State {
-		s.State = eval.Recovering
+		s.EvaluationState = eval.Recovering
 		s.LatestResult = &state.Evaluation{
 			EvaluationState: eval.Alerting,
 			EvaluationTime:  timeNow(),

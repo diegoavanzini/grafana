@@ -298,7 +298,7 @@ func StatesToStream(rule history_model.RuleMeta, states []state.StateTransition,
 			RuleUID:        rule.UID,
 			InstanceLabels: sanitizedLabels,
 		}
-		if state.State.State == eval.Error {
+		if state.State.EvaluationState == eval.Error {
 			entry.Error = state.Error.Error()
 		}
 
@@ -349,7 +349,7 @@ type LokiEntry struct {
 }
 
 func valuesAsDataBlob(state *state.State) *simplejson.Json {
-	if state.State == eval.Error || state.State == eval.NoData {
+	if state.EvaluationState == eval.Error || state.EvaluationState == eval.NoData {
 		return simplejson.New()
 	}
 

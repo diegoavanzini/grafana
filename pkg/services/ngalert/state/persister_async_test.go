@@ -33,9 +33,9 @@ func TestAsyncStatePersister_Async(t *testing.T) {
 		go persister.Async(ctx, cache)
 
 		cache.set(&State{
-			OrgID:        1,
-			State:        eval.Alerting,
-			AlertRuleUID: "1",
+			OrgID:           1,
+			EvaluationState: eval.Alerting,
+			AlertRuleUID:    "1",
 		})
 		// Let one tick pass
 		mockClock.Add(1 * time.Second)
@@ -61,9 +61,9 @@ func TestAsyncStatePersister_Async(t *testing.T) {
 		go persister.Async(ctx, cache)
 
 		cache.set(&State{
-			OrgID:        1,
-			State:        eval.Alerting,
-			AlertRuleUID: "1",
+			OrgID:           1,
+			EvaluationState: eval.Alerting,
+			AlertRuleUID:    "1",
 		})
 
 		// Now we cancel the context

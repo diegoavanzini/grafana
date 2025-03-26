@@ -604,13 +604,13 @@ func TestRuleRoutine(t *testing.T) {
 		for _, s := range allStates {
 			for i := 0; i < 2; i++ {
 				states = append(states, &state.State{
-					AlertRuleUID: rule.UID,
-					CacheID:      data.Labels(rule.Labels).Fingerprint(),
-					OrgID:        rule.OrgID,
-					State:        s,
-					StartsAt:     sch.clock.Now(),
-					EndsAt:       sch.clock.Now().Add(time.Duration(rand.Intn(25)+5) * time.Second),
-					Labels:       rule.Labels,
+					AlertRuleUID:    rule.UID,
+					CacheID:         data.Labels(rule.Labels).Fingerprint(),
+					OrgID:           rule.OrgID,
+					EvaluationState: s,
+					StartsAt:        sch.clock.Now(),
+					EndsAt:          sch.clock.Now().Add(time.Duration(rand.Intn(25)+5) * time.Second),
+					Labels:          rule.Labels,
 				})
 			}
 		}
@@ -619,7 +619,7 @@ func TestRuleRoutine(t *testing.T) {
 		states = sch.stateManager.GetStatesForRuleUID(rule.OrgID, rule.UID)
 		expectedToBeSent := 0
 		for _, s := range states {
-			if s.State == eval.Normal || s.State == eval.Pending {
+			if s.EvaluationState == eval.Normal || s.EvaluationState == eval.Pending {
 				continue
 			}
 			expectedToBeSent++
@@ -916,7 +916,7 @@ func stateForRule(rule *models.AlertRule, ts time.Time, evalState eval.State) *s
 		OrgID:              rule.OrgID,
 		AlertRuleUID:       rule.UID,
 		CacheID:            0,
-		State:              evalState,
+		EvaluationState:    evalState,
 		Annotations:        make(map[string]string),
 		Labels:             make(map[string]string),
 		StartsAt:           ts,

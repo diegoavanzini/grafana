@@ -635,7 +635,7 @@ func TestBuildTransition(t *testing.T) {
 
 		expected := &state.StateTransition{
 			State: &state.State{
-				State:              eval.Normal,
+				EvaluationState:    eval.Normal,
 				StateReason:        "",
 				LastEvaluationTime: time.Time{},
 				Values:             values,
@@ -748,7 +748,7 @@ func genStateTransitions(t *testing.T, num int, start time.Time) []state.StateTr
 
 	transitions := make([]state.StateTransition, 0, num)
 	lastState := state.State{
-		State:              eval.Normal,
+		EvaluationState:    eval.Normal,
 		StateReason:        "",
 		LastEvaluationTime: start,
 		Values: map[string]float64{
@@ -763,12 +763,12 @@ func genStateTransitions(t *testing.T, num int, start time.Time) []state.StateTr
 
 	for i := 0; i < num; i++ {
 		stateVal := rand.Intn(4)
-		if stateVal == int(lastState.State) {
+		if stateVal == int(lastState.EvaluationState) {
 			stateVal = (stateVal + 1) % 4
 		}
 
 		newState := state.State{
-			State:              eval.State(stateVal),
+			EvaluationState:    eval.State(stateVal),
 			StateReason:        "",
 			LastEvaluationTime: lastState.LastEvaluationTime.Add(time.Second * time.Duration(i)),
 			Values:             lastState.Values,
@@ -776,7 +776,7 @@ func genStateTransitions(t *testing.T, num int, start time.Time) []state.StateTr
 		}
 
 		transitions = append(transitions, state.StateTransition{
-			PreviousState:       lastState.State,
+			PreviousState:       lastState.EvaluationState,
 			PreviousStateReason: lastState.StateReason,
 			State:               &newState,
 		})

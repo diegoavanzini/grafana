@@ -153,7 +153,7 @@ func randomSate(ruleKey models.AlertRuleKey) State {
 		AlertRuleUID:      ruleKey.UID,
 		CacheID:           data.Fingerprint(rand.Int63()),
 		ResultFingerprint: data.Fingerprint(rand.Int63()),
-		State:             eval.Alerting,
+		EvaluationState:   eval.Alerting,
 		StateReason:       util.GenerateShortUID(),
 		LatestResult: &Evaluation{
 			EvaluationTime:  time.Time{},

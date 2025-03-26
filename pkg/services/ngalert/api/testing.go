@@ -81,7 +81,7 @@ func (f *fakeAlertInstanceManager) GenerateAlertInstances(orgID int64, alertRule
 				"label":                        "test",
 				"instance_label":               "test",
 			},
-			State: eval.Normal,
+			EvaluationState: eval.Normal,
 			LatestResult: &state.Evaluation{
 				EvaluationTime:  evaluationTime.Add(1 * time.Minute),
 				EvaluationState: eval.Normal,

@@ -72,7 +72,7 @@ func StateToPostableAlert(transition StateTransition, appURL *url.URL) *models.P
 		urlStr = ""
 	}
 
-	state := alertState.State
+	state := alertState.EvaluationState
 	if alertState.ResolvedAt != nil {
 		// If this is a resolved alert, we need to send an alert with the correct labels such that they will expire the previous alert.
 		// In most cases the labels on the state will be correct, however when the previous alert was a NoData or Error alert, we need to

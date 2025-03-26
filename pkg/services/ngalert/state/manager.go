@@ -201,7 +201,7 @@ func (st *Manager) Warm(ctx context.Context, orgReader OrgReader, rulesReader Ru
 				OrgID:                entry.RuleOrgID,
 				CacheID:              cacheID,
 				Labels:               lbs,
-				State:                translateInstanceState(entry.CurrentState),
+				EvaluationState:      translateInstanceState(entry.CurrentState),
 				StateReason:          entry.CurrentReason,
 				LastEvaluationString: "",
 				StartsAt:             entry.CurrentStateSince,
@@ -240,10 +240,10 @@ func (st *Manager) DeleteStateByRuleUID(ctx context.Context, ruleKey ngModels.Al
 	now := st.clock.Now()
 	transitions := make([]StateTransition, 0, len(states))
 	for _, s := range states {
-		oldState := s.State
+		oldState := s.EvaluationState
 		oldReason := s.StateReason
 		startsAt := s.StartsAt
-		if s.State != eval.Normal {
+		if s.EvaluationState != eval.Normal {
 			startsAt = now
 		}
 		s.SetNormal(reason, startsAt, now)
@@ -526,11 +526,11 @@ func (st *Manager) deleteStaleStatesFromCache(logger log.Logger, evaluatedAt tim
 	resolvedStates := make([]StateTransition, 0, len(staleStates))
 
 	for _, s := range staleStates {
-		logger.Info("Detected stale state entry", "cacheID", s.CacheID, "state", s.State, "reason", s.StateReason)
-		oldState := s.State
+		logger.Info("Detected stale state entry", "cacheID", s.CacheID, "state", s.EvaluationState, "reason", s.StateReason)
+		oldState := s.EvaluationState
 		oldReason := s.StateReason
 
-		s.State = eval.Normal
+		s.EvaluationState = eval.Normal
 		s.StateReason = ngModels.StateReasonMissingSeries
 		s.EndsAt = evaluatedAt
 		s.LastEvaluationTime = evaluatedAt
@@ -580,7 +580,7 @@ func StatesToRuleStatus(states []*State) ngModels.RuleStatus {
 
 		status.EvaluationDuration = state.EvaluationDuration
 
-		switch state.State {
+		switch state.EvaluationState {
 		case eval.Normal:
 		case eval.Pending:
 		case eval.Alerting:

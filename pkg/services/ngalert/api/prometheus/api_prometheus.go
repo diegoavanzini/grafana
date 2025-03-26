@@ -119,7 +119,7 @@ func PrepareAlertStatuses(manager state.AlertInstanceManager, opts AlertStatuses
 		startsAt := alertState.StartsAt
 		valString := ""
 
-		if alertState.State == eval.Alerting || alertState.State == eval.Pending || alertState.State == eval.Recovering {
+		if alertState.EvaluationState == eval.Alerting || alertState.EvaluationState == eval.Pending || alertState.EvaluationState == eval.Recovering {
 			valString = FormatValues(alertState)
 		}
 
@@ -129,7 +129,7 @@ func PrepareAlertStatuses(manager state.AlertInstanceManager, opts AlertStatuses
 
 			// TODO: or should we make this two fields? Using one field lets the
 			// frontend use the same logic for parsing text on annotations and this.
-			State:    state.FormatStateAndReason(alertState.State, alertState.StateReason),
+			State:    state.FormatStateAndReason(alertState.EvaluationState, alertState.StateReason),
 			ActiveAt: &startsAt,
 			Value:    valString,
 		})
@@ -571,10 +571,10 @@ func toRuleGroup(log log.Logger, manager state.AlertInstanceManager, sr StatusRe
 		for _, alertState := range states {
 			activeAt := alertState.StartsAt
 			valString := ""
-			if alertState.State == eval.Alerting || alertState.State == eval.Pending || alertState.State == eval.Recovering {
+			if alertState.EvaluationState == eval.Alerting || alertState.EvaluationState == eval.Pending || alertState.EvaluationState == eval.Recovering {
 				valString = FormatValues(alertState)
 			}
-			stateKey := strings.ToLower(alertState.State.String())
+			stateKey := strings.ToLower(alertState.EvaluationState.String())
 			totals[stateKey] += 1
 			// Do not add error twice when execution error state is Error
 			if alertState.Error != nil && rule.ExecErrState != ngmodels.ErrorErrState {
@@ -586,7 +586,7 @@ func toRuleGroup(log log.Logger, manager state.AlertInstanceManager, sr StatusRe
 
 				// TODO: or should we make this two fields? Using one field lets the
 				// frontend use the same logic for parsing text on annotations and this.
-				State:    state.FormatStateAndReason(alertState.State, alertState.StateReason),
+				State:    state.FormatStateAndReason(alertState.EvaluationState, alertState.StateReason),
 				ActiveAt: &activeAt,
 				Value:    valString,
 			}
@@ -594,7 +594,7 @@ func toRuleGroup(log log.Logger, manager state.AlertInstanceManager, sr StatusRe
 			// Set the state of the rule based on the state of its alerts.
 			// Only update the rule state with 'pending' or 'recovering' if the current state is 'inactive'.
 			// This prevents overwriting a higher-severity 'firing' state in the case of a rule with multiple alerts.
-			switch alertState.State {
+			switch alertState.EvaluationState {
 			case eval.Normal:
 			case eval.Pending:
 				if alertingRule.State == "inactive" {
@@ -614,7 +614,7 @@ func toRuleGroup(log log.Logger, manager state.AlertInstanceManager, sr StatusRe
 			}
 
 			if len(withStates) > 0 {
-				if _, ok := withStates[alertState.State]; !ok {
+				if _, ok := withStates[alertState.EvaluationState]; !ok {
 					continue
 				}
 			}

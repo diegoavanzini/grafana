@@ -86,7 +86,7 @@ func TestShouldRecord(t *testing.T) {
 	for _, tc := range allCombinations {
 		_, ok := negativeTransitions[tc]
 		trans := state.StateTransition{
-			State:               &state.State{State: tc.State, StateReason: tc.StateReason},
+			State:               &state.State{EvaluationState: tc.State, StateReason: tc.StateReason},
 			PreviousState:       tc.PreviousState,
 			PreviousStateReason: tc.PreviousStateReason,
 		}
@@ -102,7 +102,7 @@ func TestShouldRecordAnnotation(t *testing.T) {
 		return state.StateTransition{
 			PreviousState:       from,
 			PreviousStateReason: fromReason,
-			State:               &state.State{State: to, StateReason: toReason},
+			State:               &state.State{EvaluationState: to, StateReason: toReason},
 		}
 	}
 

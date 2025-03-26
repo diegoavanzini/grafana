@@ -162,9 +162,9 @@ func TestEvaluatorTest(t *testing.T) {
 	generateState := func(prefix string) *state.State {
 		labels := models.GenerateAlertLabels(rand.Intn(5)+1, prefix+"-")
 		return &state.State{
-			CacheID: labels.Fingerprint(),
-			Labels:  labels,
-			State:   states[rand.Intn(len(states))],
+			CacheID:         labels.Fingerprint(),
+			Labels:          labels,
+			EvaluationState: states[rand.Intn(len(states))],
 		}
 	}
 
@@ -205,10 +205,10 @@ func TestEvaluatorTest(t *testing.T) {
 			labels := models.GenerateAlertLabels(rand.Intn(5)+1, s.String()+"-")
 			states = append(states, state.StateTransition{
 				State: &state.State{
-					CacheID:     labels.Fingerprint(),
-					Labels:      labels,
-					State:       s,
-					StateReason: util.GenerateShortUID(),
+					CacheID:         labels.Fingerprint(),
+					Labels:          labels,
+					EvaluationState: s,
+					StateReason:     util.GenerateShortUID(),
 				},
 			})
 		}
@@ -255,12 +255,12 @@ func TestEvaluatorTest(t *testing.T) {
 				require.Equal(t, expectedTime, timestampField.At(i).(time.Time))
 				for _, s := range states {
 					f := fieldByState[s.CacheID]
-					if s.State.State == eval.NoData {
+					if s.State.EvaluationState == eval.NoData {
 						require.Nil(t, f.At(i))
 					} else {
 						v := f.At(i).(*string)
 						require.NotNilf(t, v, "Field [%s] value at index %d should not be nil", s.CacheID, i)
-						require.Equal(t, fmt.Sprintf("%s (%s)", s.State.State, s.StateReason), *v)
+						require.Equal(t, fmt.Sprintf("%s (%s)", s.State.EvaluationState, s.StateReason), *v)
 					}
 				}
 			}
@@ -275,10 +275,10 @@ func TestEvaluatorTest(t *testing.T) {
 		states := []state.StateTransition{
 			{
 				State: &state.State{
-					CacheID:     labels.Fingerprint(),
-					Labels:      labels,
-					State:       eval.Normal,
-					StateReason: util.GenerateShortUID(),
+					CacheID:         labels.Fingerprint(),
+					Labels:          labels,
+					EvaluationState: eval.Normal,
+					StateReason:     util.GenerateShortUID(),
 				},
 			},
 		}

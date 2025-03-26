@@ -41,7 +41,7 @@ func TestRemoteLokiBackend(t *testing.T) {
 		t.Run("skips non-transitory states", func(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
-			states := singleFromNormal(&state.State{State: eval.Normal})
+			states := singleFromNormal(&state.State{EvaluationState: eval.Normal})
 
 			res := StatesToStream(rule, states, nil, l)
 
@@ -51,7 +51,7 @@ func TestRemoteLokiBackend(t *testing.T) {
 		t.Run("maps evaluation errors", func(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
-			states := singleFromNormal(&state.State{State: eval.Error, Error: fmt.Errorf("oh no")})
+			states := singleFromNormal(&state.State{EvaluationState: eval.Error, Error: fmt.Errorf("oh no")})
 
 			res := StatesToStream(rule, states, nil, l)
 
@@ -62,7 +62,7 @@ func TestRemoteLokiBackend(t *testing.T) {
 		t.Run("maps NoData results", func(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
-			states := singleFromNormal(&state.State{State: eval.NoData})
+			states := singleFromNormal(&state.State{EvaluationState: eval.NoData})
 
 			res := StatesToStream(rule, states, nil, l)
 
@@ -73,8 +73,8 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State:  eval.Alerting,
-				Labels: data.Labels{"a": "b"},
+				EvaluationState: eval.Alerting,
+				Labels:          data.Labels{"a": "b"},
 			})
 
 			res := StatesToStream(rule, states, nil, l)
@@ -92,8 +92,8 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State:  eval.Alerting,
-				Labels: data.Labels{"__private__": "b"},
+				EvaluationState: eval.Alerting,
+				Labels:          data.Labels{"__private__": "b"},
 			})
 
 			res := StatesToStream(rule, states, nil, l)
@@ -105,8 +105,8 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State:  eval.Alerting,
-				Labels: data.Labels{"a": "b"},
+				EvaluationState: eval.Alerting,
+				Labels:          data.Labels{"a": "b"},
 			})
 
 			res := StatesToStream(rule, states, nil, l)
@@ -122,8 +122,8 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State:  eval.Alerting,
-				Labels: data.Labels{"statelabel": "labelvalue"},
+				EvaluationState: eval.Alerting,
+				Labels:          data.Labels{"statelabel": "labelvalue"},
 			})
 
 			res := StatesToStream(rule, states, nil, l)
@@ -136,7 +136,7 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State: eval.Alerting,
+				EvaluationState: eval.Alerting,
 				Labels: data.Labels{
 					"statelabel": "labelvalue",
 					"labeltwo":   "labelvalue",
@@ -154,8 +154,8 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State:  eval.Alerting,
-				Values: map[string]float64{"A": 2.0, "B": 5.5},
+				EvaluationState: eval.Alerting,
+				Values:          map[string]float64{"A": 2.0, "B": 5.5},
 			})
 
 			res := StatesToStream(rule, states, nil, l)
@@ -173,8 +173,8 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule.Condition = "some-condition"
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State:  eval.Alerting,
-				Labels: data.Labels{"a": "b"},
+				EvaluationState: eval.Alerting,
+				Labels:          data.Labels{"a": "b"},
 			})
 
 			res := StatesToStream(rule, states, nil, l)
@@ -187,7 +187,7 @@ func TestRemoteLokiBackend(t *testing.T) {
 			rule := createTestRule()
 			l := log.NewNopLogger()
 			states := singleFromNormal(&state.State{
-				State: eval.Alerting,
+				EvaluationState: eval.Alerting,
 				Labels: data.Labels{
 					"statelabel": "labelvalue",
 					"labeltwo":   "labelvalue",
@@ -628,8 +628,8 @@ func TestRecordStates(t *testing.T) {
 		loki := createTestLokiBackend(t, req, metrics.NewHistorianMetrics(prometheus.NewRegistry(), metrics.Subsystem))
 		rule := createTestRule()
 		states := singleFromNormal(&state.State{
-			State:  eval.Alerting,
-			Labels: data.Labels{"a": "b"},
+			EvaluationState: eval.Alerting,
+			Labels:          data.Labels{"a": "b"},
 		})
 
 		err := <-loki.Record(context.Background(), rule, states)
@@ -645,8 +645,8 @@ func TestRecordStates(t *testing.T) {
 		errLoki := createTestLokiBackend(t, NewFakeRequester().WithResponse(badResponse()), met) //nolint:bodyclose
 		rule := createTestRule()
 		states := singleFromNormal(&state.State{
-			State:  eval.Alerting,
-			Labels: data.Labels{"a": "b"},
+			EvaluationState: eval.Alerting,
+			Labels:          data.Labels{"a": "b"},
 		})
 
 		<-loki.Record(context.Background(), rule, states)
@@ -692,7 +692,7 @@ grafana_alerting_state_history_writes_total{backend="loki",org="1"} 2
 		loki := createTestLokiBackend(t, req, metrics.NewHistorianMetrics(prometheus.NewRegistry(), metrics.Subsystem))
 		rule := createTestRule()
 		states := singleFromNormal(&state.State{
-			State: eval.Alerting,
+			EvaluationState: eval.Alerting,
 			Labels: data.Labels{
 				"dots":   "contains.dot",
 				"equals": "contains=equals",
@@ -715,7 +715,7 @@ grafana_alerting_state_history_writes_total{backend="loki",org="1"} 2
 		loki := createTestLokiBackend(t, req, metrics.NewHistorianMetrics(prometheus.NewRegistry(), metrics.Subsystem))
 		rule := createTestRule()
 		states := singleFromNormal(&state.State{
-			State: eval.Alerting,
+			EvaluationState: eval.Alerting,
 		})
 
 		err := <-loki.Record(context.Background(), rule, states)

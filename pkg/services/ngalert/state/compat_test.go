@@ -341,7 +341,7 @@ func randomTransition(from, to eval.State) StateTransition {
 	return StateTransition{
 		PreviousState: from,
 		State: &State{
-			State:              to,
+			EvaluationState:    to,
 			AlertRuleUID:       util.GenerateShortUID(),
 			StartsAt:           time.Now(),
 			EndsAt:             randomTimeInFuture(),

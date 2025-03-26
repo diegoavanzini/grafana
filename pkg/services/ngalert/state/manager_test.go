@@ -64,7 +64,7 @@ func TestWarmStateCache(t *testing.T) {
 			AlertRuleUID:       rule.UID,
 			OrgID:              rule.OrgID,
 			Labels:             data.Labels{"test1": "testValue1"},
-			State:              eval.Normal,
+			EvaluationState:    eval.Normal,
 			LatestResult:       &state.Evaluation{EvaluationTime: evaluationTime, EvaluationState: eval.Normal},
 			StartsAt:           evaluationTime.Add(-1 * time.Minute),
 			EndsAt:             evaluationTime.Add(1 * time.Minute),
@@ -77,7 +77,7 @@ func TestWarmStateCache(t *testing.T) {
 			AlertRuleUID:       rule.UID,
 			OrgID:              rule.OrgID,
 			Labels:             data.Labels{"test2": "testValue2"},
-			State:              eval.Alerting,
+			EvaluationState:    eval.Alerting,
 			LatestResult:       &state.Evaluation{EvaluationTime: evaluationTime, EvaluationState: eval.Alerting},
 			StartsAt:           evaluationTime.Add(-1 * time.Minute),
 			EndsAt:             evaluationTime.Add(1 * time.Minute),
@@ -91,7 +91,7 @@ func TestWarmStateCache(t *testing.T) {
 			AlertRuleUID:       rule.UID,
 			OrgID:              rule.OrgID,
 			Labels:             data.Labels{"test3": "testValue3"},
-			State:              eval.NoData,
+			EvaluationState:    eval.NoData,
 			LatestResult:       &state.Evaluation{EvaluationTime: evaluationTime, EvaluationState: eval.NoData},
 			StartsAt:           evaluationTime.Add(-1 * time.Minute),
 			EndsAt:             evaluationTime.Add(1 * time.Minute),
@@ -105,7 +105,7 @@ func TestWarmStateCache(t *testing.T) {
 			AlertRuleUID:       rule.UID,
 			OrgID:              rule.OrgID,
 			Labels:             data.Labels{"test4": "testValue4"},
-			State:              eval.Error,
+			EvaluationState:    eval.Error,
 			LatestResult:       &state.Evaluation{EvaluationTime: evaluationTime, EvaluationState: eval.Error},
 			StartsAt:           evaluationTime.Add(-1 * time.Minute),
 			EndsAt:             evaluationTime.Add(1 * time.Minute),
@@ -119,7 +119,7 @@ func TestWarmStateCache(t *testing.T) {
 			AlertRuleUID:       rule.UID,
 			OrgID:              rule.OrgID,
 			Labels:             data.Labels{"test5": "testValue5"},
-			State:              eval.Pending,
+			EvaluationState:    eval.Pending,
 			LatestResult:       &state.Evaluation{EvaluationTime: evaluationTime, EvaluationState: eval.Pending},
 			StartsAt:           evaluationTime.Add(-1 * time.Minute),
 			EndsAt:             evaluationTime.Add(1 * time.Minute),
@@ -440,7 +440,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t1, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -462,7 +462,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t1, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -471,7 +471,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels2"],
 					ResultFingerprint:  labels2.Fingerprint(),
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					LatestResult:       newEvaluation(t1, eval.Alerting),
 					StartsAt:           t1,
 					EndsAt:             t1.Add(state.ResendDelay * 4),
@@ -495,7 +495,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(tn(6), eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -519,7 +519,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					LatestResult:       newEvaluation(t2, eval.Alerting),
 					StartsAt:           t2,
 					EndsAt:             t2.Add(state.ResendDelay * 4),
@@ -550,7 +550,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					LatestResult:       newEvaluation(tn(4), eval.Alerting),
 					StartsAt:           tn(4),
 					EndsAt:             tn(4).Add(state.ResendDelay * 4),
@@ -575,7 +575,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t2, eval.Normal),
 					StartsAt:           t2,
 					EndsAt:             t2,
@@ -604,7 +604,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t3, eval.Normal),
 					StartsAt:           t2,
 					EndsAt:             t2,
@@ -636,7 +636,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Pending,
+					EvaluationState:    eval.Pending,
 					LatestResult:       newEvaluation(tn(4), eval.Alerting),
 					StartsAt:           tn(4),
 					EndsAt:             tn(4).Add(state.ResendDelay * 4),
@@ -671,7 +671,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Pending,
+					EvaluationState:    eval.Pending,
 					LatestResult:       newEvaluation(tn(5), eval.Alerting),
 					StartsAt:           tn(4),
 					EndsAt:             tn(4).Add(state.ResendDelay * 4),
@@ -702,7 +702,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.NoData,
+					EvaluationState:    eval.NoData,
 					LatestResult:       newEvaluation(tn(4), eval.NoData),
 					StartsAt:           tn(4),
 					EndsAt:             tn(4).Add(state.ResendDelay * 4),
@@ -728,7 +728,7 @@ func TestProcessEvalResults(t *testing.T) {
 					Labels:            labels["system + rule + labels1"],
 					ResultFingerprint: labels1.Fingerprint(),
 
-					State:              eval.Pending,
+					EvaluationState:    eval.Pending,
 					LatestResult:       newEvaluation(t2, eval.Alerting),
 					StartsAt:           t2,
 					EndsAt:             t2.Add(state.ResendDelay * 4),
@@ -752,7 +752,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Pending,
+					EvaluationState:    eval.Pending,
 					LatestResult:       newEvaluation(t2, eval.Alerting),
 					StartsAt:           t1,
 					EndsAt:             t1.Add(state.ResendDelay * 4),
@@ -776,7 +776,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.NoData,
+					EvaluationState:    eval.NoData,
 					LatestResult:       newEvaluation(t2, eval.NoData),
 					StartsAt:           t2,
 					EndsAt:             t2.Add(state.ResendDelay * 4),
@@ -801,7 +801,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t1, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -810,7 +810,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule"],
 					ResultFingerprint:  data.Labels{}.Fingerprint(),
-					State:              eval.NoData,
+					EvaluationState:    eval.NoData,
 					LatestResult:       newEvaluation(t2, eval.NoData),
 					StartsAt:           t2,
 					EndsAt:             t2.Add(state.ResendDelay * 4),
@@ -836,7 +836,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t1, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -845,7 +845,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels2"],
 					ResultFingerprint:  labels2.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t1, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -854,7 +854,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule"],
 					ResultFingerprint:  data.Labels{}.Fingerprint(),
-					State:              eval.NoData,
+					EvaluationState:    eval.NoData,
 					LatestResult:       newEvaluation(t2, eval.NoData),
 					StartsAt:           t2,
 					EndsAt:             t2.Add(state.ResendDelay * 4),
@@ -882,7 +882,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t3, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -891,7 +891,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + no-data"],
 					ResultFingerprint:  noDataLabels.Fingerprint(),
-					State:              eval.NoData,
+					EvaluationState:    eval.NoData,
 					LatestResult:       newEvaluation(t2, eval.NoData),
 					StartsAt:           t2,
 					EndsAt:             t2.Add(state.ResendDelay * 4),
@@ -916,7 +916,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Pending,
+					EvaluationState:    eval.Pending,
 					StateReason:        eval.Error.String(),
 					Error:              errors.New("with_state_error"),
 					Annotations:        map[string]string{"annotation": "test", "Error": "with_state_error"},
@@ -952,7 +952,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					StateReason:        eval.Error.String(),
 					Error:              errors.New("with_state_error"),
 					Annotations:        map[string]string{"annotation": "test", "Error": "with_state_error"},
@@ -988,7 +988,7 @@ func TestProcessEvalResults(t *testing.T) {
 						"label":     "test",
 						"job":       "prod/grafana",
 					}),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(t1, eval.Normal),
 					StartsAt:           t1,
 					EndsAt:             t1,
@@ -1022,7 +1022,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule"],
 					ResultFingerprint:  data.Labels{}.Fingerprint(),
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					LatestResult:       newEvaluation(t3, eval.Alerting),
 					StartsAt:           t3,
 					EndsAt:             t3.Add(state.ResendDelay * 4),
@@ -1050,7 +1050,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:            labels["system + rule"],
 					ResultFingerprint: data.Labels{}.Fingerprint(),
-					State:             eval.Alerting,
+					EvaluationState:   eval.Alerting,
 					LatestResult: newEvaluationWithValues(t1, eval.Alerting, map[string]float64{
 						"A": 1.0,
 						"B": 2.0,
@@ -1085,7 +1085,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:            labels["system + rule"],
 					ResultFingerprint: data.Labels{}.Fingerprint(),
-					State:             eval.Alerting,
+					EvaluationState:   eval.Alerting,
 					LatestResult: newEvaluationWithValues(t1, eval.Alerting, map[string]float64{
 						"B0": 1.0,
 						"B1": 2.0,
@@ -1120,7 +1120,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Recovering,
+					EvaluationState:    eval.Recovering,
 					LatestResult:       newEvaluation(t3, eval.Normal),
 					StartsAt:           t3,
 					EndsAt:             t3.Add(state.ResendDelay * 4),
@@ -1154,7 +1154,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					LatestResult:       newEvaluation(tn(5), eval.Normal),
 					StartsAt:           tn(5),
 					EndsAt:             tn(5),
@@ -1192,7 +1192,7 @@ func TestProcessEvalResults(t *testing.T) {
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
-					State:              eval.Recovering,
+					EvaluationState:    eval.Recovering,
 					LatestResult:       newEvaluation(tn(6), eval.Normal),
 					StartsAt:           tn(6),
 					EndsAt:             tn(6).Add(state.ResendDelay * 4),
@@ -1492,11 +1492,11 @@ func TestStaleResultsHandler(t *testing.T) {
 			},
 			expectedStates: []*state.State{
 				{
-					AlertRuleUID: rule.UID,
-					OrgID:        1,
-					Labels:       data.Labels(labels1),
-					Values:       make(map[string]float64),
-					State:        eval.Normal,
+					AlertRuleUID:    rule.UID,
+					OrgID:           1,
+					Labels:          data.Labels(labels1),
+					Values:          make(map[string]float64),
+					EvaluationState: eval.Normal,
 					LatestResult: &state.Evaluation{
 						EvaluationTime:  evaluationTime,
 						EvaluationState: eval.Normal,
@@ -1643,7 +1643,7 @@ func TestStaleResults(t *testing.T) {
 
 	currentStates := st.GetStatesForRuleUID(rule.OrgID, rule.UID)
 	statesMap := checkExpectedStates(t, currentStates, initStates)
-	require.Equal(t, eval.Alerting, statesMap[state2].State) // make sure the state is alerting because we need it to be resolved later
+	require.Equal(t, eval.Alerting, statesMap[state2].EvaluationState) // make sure the state is alerting because we need it to be resolved later
 
 	staleDuration := 2 * time.Duration(rule.IntervalSeconds) * time.Second
 	clk.Add(staleDuration)
@@ -1661,7 +1661,7 @@ func TestStaleResults(t *testing.T) {
 			if s.CacheID == state1 {
 				continue
 			}
-			assert.Equal(t, eval.Normal, s.State.State)
+			assert.Equal(t, eval.Normal, s.State.EvaluationState)
 			assert.Equal(t, models.StateReasonMissingSeries, s.StateReason)
 			assert.Equal(t, clk.Now(), s.EndsAt)
 			if s.CacheID == state2 {
@@ -1753,7 +1753,7 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 					AlertRuleUID:       rule.UID,
 					OrgID:              1,
 					Labels:             data.Labels{"test1": "testValue1"},
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					EvaluationDuration: 0,
 					Annotations:        map[string]string{"testAnnoKey": "testAnnoValue"},
 				},
@@ -1761,7 +1761,7 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 					AlertRuleUID:       rule.UID,
 					OrgID:              1,
 					Labels:             data.Labels{"test2": "testValue2"},
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					EvaluationDuration: 0,
 					Annotations:        map[string]string{"testAnnoKey": "testAnnoValue"},
 				},
@@ -1812,16 +1812,16 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 			for _, s := range transitions {
 				assert.Contains(t, expectedStatesMap, s.CacheID)
 				oldState := expectedStatesMap[s.CacheID]
-				assert.Equal(t, oldState.State, s.PreviousState)
+				assert.Equal(t, oldState.EvaluationState, s.PreviousState)
 				assert.Equal(t, oldState.StateReason, s.PreviousStateReason)
-				assert.Equal(t, eval.Normal, s.State.State)
+				assert.Equal(t, eval.Normal, s.State.EvaluationState)
 				assert.Equal(t, expectedReason, s.StateReason)
-				if oldState.State == eval.Normal {
+				if oldState.EvaluationState == eval.Normal {
 					assert.Equal(t, oldState.StartsAt, s.StartsAt)
 					assert.Zero(t, s.ResolvedAt)
 				} else {
 					assert.Equal(t, clk.Now(), s.StartsAt)
-					if oldState.State == eval.Alerting {
+					if oldState.EvaluationState == eval.Alerting {
 						assert.Equal(t, clk.Now(), *s.ResolvedAt)
 					}
 				}
@@ -1900,7 +1900,7 @@ func TestResetStateByRuleUID(t *testing.T) {
 					AlertRuleUID:       rule.UID,
 					OrgID:              1,
 					Labels:             data.Labels{"test1": "testValue1"},
-					State:              eval.Normal,
+					EvaluationState:    eval.Normal,
 					EvaluationDuration: 0,
 					Annotations:        map[string]string{"testAnnoKey": "testAnnoValue"},
 				},
@@ -1908,7 +1908,7 @@ func TestResetStateByRuleUID(t *testing.T) {
 					AlertRuleUID:       rule.UID,
 					OrgID:              1,
 					Labels:             data.Labels{"test2": "testValue2"},
-					State:              eval.Alerting,
+					EvaluationState:    eval.Alerting,
 					EvaluationDuration: 0,
 					Annotations:        map[string]string{"testAnnoKey": "testAnnoValue"},
 				},
@@ -1956,16 +1956,16 @@ func TestResetStateByRuleUID(t *testing.T) {
 			for _, s := range transitions {
 				assert.Contains(t, expectedStatesMap, s.CacheID)
 				oldState := expectedStatesMap[s.CacheID]
-				assert.Equal(t, oldState.State, s.PreviousState)
+				assert.Equal(t, oldState.EvaluationState, s.PreviousState)
 				assert.Equal(t, oldState.StateReason, s.PreviousStateReason)
-				assert.Equal(t, eval.Normal, s.State.State)
+				assert.Equal(t, eval.Normal, s.State.EvaluationState)
 				assert.Equal(t, models.StateReasonPaused, s.StateReason)
-				if oldState.State == eval.Normal {
+				if oldState.EvaluationState == eval.Normal {
 					assert.Equal(t, oldState.StartsAt, s.StartsAt)
 					assert.Zero(t, s.ResolvedAt)
 				} else {
 					assert.Equal(t, clk.Now(), s.StartsAt)
-					if oldState.State == eval.Alerting {
+					if oldState.EvaluationState == eval.Alerting {
 						assert.Equal(t, clk.Now(), *s.ResolvedAt)
 					}
 				}

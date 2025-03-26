@@ -226,7 +226,7 @@ func BuildAnnotationTextAndData(rule history_model.RuleMeta, currentState *state
 	jsonData := simplejson.New()
 	var value string
 
-	switch currentState.State {
+	switch currentState.EvaluationState {
 	case eval.Error:
 		if currentState.Error == nil {
 			jsonData.Set("error", nil)

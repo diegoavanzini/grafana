@@ -105,8 +105,8 @@ func (e *Engine) Test(ctx context.Context, user identity.Requester, rule *models
 				field = data.NewField("", s.Labels, make([]*string, length))
 				valueFields[s.CacheID] = field
 			}
-			if s.State.State != eval.NoData { // set nil if NoData
-				value := s.State.State.String()
+			if s.State.EvaluationState != eval.NoData { // set nil if NoData
+				value := s.State.EvaluationState.String()
 				if s.StateReason != "" {
 					value += " (" + s.StateReason + ")"
 				}

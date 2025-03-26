@@ -17,11 +17,11 @@ func TestLoadedResultsFromRuleState(t *testing.T) {
 	p := &FakeRuleStateProvider{
 		map[ngmodels.AlertRuleKey][]*state.State{
 			rule.GetKey(): {
-				{State: eval.Alerting, ResultFingerprint: data.Fingerprint(1)},
-				{State: eval.Pending, ResultFingerprint: data.Fingerprint(2)},
-				{State: eval.Normal, ResultFingerprint: data.Fingerprint(3)},
-				{State: eval.NoData, ResultFingerprint: data.Fingerprint(4)},
-				{State: eval.Error, ResultFingerprint: data.Fingerprint(5)},
+				{EvaluationState: eval.Alerting, ResultFingerprint: data.Fingerprint(1)},
+				{EvaluationState: eval.Pending, ResultFingerprint: data.Fingerprint(2)},
+				{EvaluationState: eval.Normal, ResultFingerprint: data.Fingerprint(3)},
+				{EvaluationState: eval.NoData, ResultFingerprint: data.Fingerprint(4)},
+				{EvaluationState: eval.Error, ResultFingerprint: data.Fingerprint(5)},
 			},
 		},
 	}

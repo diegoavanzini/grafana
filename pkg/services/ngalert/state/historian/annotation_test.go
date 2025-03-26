@@ -101,8 +101,8 @@ func TestAnnotationHistorian(t *testing.T) {
 		anns := createTestAnnotationBackendSut(t)
 		rule := createTestRule()
 		states := singleFromNormal(&state.State{
-			State:  eval.Alerting,
-			Labels: data.Labels{"a": "b"},
+			EvaluationState: eval.Alerting,
+			Labels:          data.Labels{"a": "b"},
 		})
 
 		err := <-anns.Record(context.Background(), rule, states)
@@ -117,8 +117,8 @@ func TestAnnotationHistorian(t *testing.T) {
 		errAnns := createFailingAnnotationSut(t, met)
 		rule := createTestRule()
 		states := singleFromNormal(&state.State{
-			State:  eval.Alerting,
-			Labels: data.Labels{"a": "b"},
+			EvaluationState: eval.Alerting,
+			Labels:          data.Labels{"a": "b"},
 		})
 
 		<-anns.Record(context.Background(), rule, states)
@@ -255,7 +255,7 @@ func TestBuildAnnotations(t *testing.T) {
 func makeStateTransition() state.StateTransition {
 	return state.StateTransition{
 		State: &state.State{
-			State: eval.Alerting,
+			EvaluationState: eval.Alerting,
 		},
 		PreviousState: eval.Normal,
 	}

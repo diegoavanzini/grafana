@@ -61,7 +61,7 @@ func (c *cache) countAlertsBy(state eval.State) float64 {
 	for _, orgMap := range c.states {
 		for _, rule := range orgMap {
 			for _, st := range rule.states {
-				if st.State == state {
+				if st.EvaluationState == state {
 					count++
 				}
 			}
@@ -290,7 +290,7 @@ func (c *cache) GetAlertInstances() []ngModels.AlertInstance {
 				states = append(states, ngModels.AlertInstance{
 					AlertInstanceKey:  key,
 					Labels:            ngModels.InstanceLabels(v2.Labels),
-					CurrentState:      ngModels.InstanceStateType(v2.State.String()),
+					CurrentState:      ngModels.InstanceStateType(v2.EvaluationState.String()),
 					CurrentReason:     v2.StateReason,
 					LastEvalTime:      v2.LastEvaluationTime,
 					CurrentStateSince: v2.StartsAt,
