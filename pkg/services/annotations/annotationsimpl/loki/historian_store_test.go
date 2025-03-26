@@ -396,7 +396,7 @@ func TestIntegrationAlertStateHistoryStore(t *testing.T) {
 					DashboardID:  dashboard1.ID,
 					DashboardUID: &dashboard1.UID,
 					PanelID:      *rule.PanelID,
-					Time:         transition.State.LastEvaluationTime.UnixMilli(),
+					Time:         transition.AlertInstance.LastEvaluationTime.UnixMilli(),
 					NewState:     transition.Formatted(),
 				}
 				if i > 0 {
@@ -634,7 +634,7 @@ func TestBuildTransition(t *testing.T) {
 		}
 
 		expected := &state.StateTransition{
-			State: &state.State{
+			AlertInstance: &state.AlertInstance{
 				EvaluationState:    eval.Normal,
 				StateReason:        "",
 				LastEvaluationTime: time.Time{},
@@ -747,7 +747,7 @@ func genStateTransitions(t *testing.T, num int, start time.Time) []state.StateTr
 	t.Helper()
 
 	transitions := make([]state.StateTransition, 0, num)
-	lastState := state.State{
+	lastState := state.AlertInstance{
 		EvaluationState:    eval.Normal,
 		StateReason:        "",
 		LastEvaluationTime: start,
@@ -767,7 +767,7 @@ func genStateTransitions(t *testing.T, num int, start time.Time) []state.StateTr
 			stateVal = (stateVal + 1) % 4
 		}
 
-		newState := state.State{
+		newState := state.AlertInstance{
 			EvaluationState:    eval.State(stateVal),
 			StateReason:        "",
 			LastEvaluationTime: lastState.LastEvaluationTime.Add(time.Second * time.Duration(i)),
@@ -778,7 +778,7 @@ func genStateTransitions(t *testing.T, num int, start time.Time) []state.StateTr
 		transitions = append(transitions, state.StateTransition{
 			PreviousState:       lastState.EvaluationState,
 			PreviousStateReason: lastState.StateReason,
-			State:               &newState,
+			AlertInstance:       &newState,
 		})
 
 		lastState = newState

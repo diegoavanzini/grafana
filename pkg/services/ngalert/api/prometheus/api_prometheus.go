@@ -138,7 +138,7 @@ func PrepareAlertStatuses(manager state.AlertInstanceManager, opts AlertStatuses
 	return alertResponse
 }
 
-func FormatValues(alertState *state.State) string {
+func FormatValues(alertState *state.AlertInstance) string {
 	var fv string
 	values := alertState.GetLastEvaluationValuesForCondition()
 

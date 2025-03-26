@@ -32,7 +32,7 @@ func TestAsyncStatePersister_Async(t *testing.T) {
 
 		go persister.Async(ctx, cache)
 
-		cache.set(&State{
+		cache.set(&AlertInstance{
 			OrgID:           1,
 			EvaluationState: eval.Alerting,
 			AlertRuleUID:    "1",
@@ -60,7 +60,7 @@ func TestAsyncStatePersister_Async(t *testing.T) {
 
 		go persister.Async(ctx, cache)
 
-		cache.set(&State{
+		cache.set(&AlertInstance{
 			OrgID:           1,
 			EvaluationState: eval.Alerting,
 			AlertRuleUID:    "1",

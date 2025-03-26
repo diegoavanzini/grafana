@@ -59,7 +59,7 @@ func TestWarmStateCache(t *testing.T) {
 
 	rule := tests.CreateTestAlertRule(t, ctx, dbstore, 600, mainOrg.ID)
 
-	expectedEntries := []*state.State{
+	expectedEntries := []*state.AlertInstance{
 		{
 			AlertRuleUID:       rule.UID,
 			OrgID:              rule.OrgID,
@@ -263,7 +263,7 @@ func TestWarmStateCache(t *testing.T) {
 			setCacheID(entry)
 			cacheEntry := st.Get(entry.OrgID, entry.AlertRuleUID, entry.CacheID)
 
-			if diff := cmp.Diff(entry, cacheEntry, cmpopts.IgnoreFields(state.State{}, "LatestResult")); diff != "" {
+			if diff := cmp.Diff(entry, cacheEntry, cmpopts.IgnoreFields(state.AlertInstance{}, "LatestResult")); diff != "" {
 				t.Errorf("Result mismatch (-want +got):\n%s", diff)
 				t.FailNow()
 			}
@@ -423,7 +423,7 @@ func TestProcessEvalResults(t *testing.T) {
 		desc                string
 		alertRule           *models.AlertRule
 		evalResults         map[time.Time]eval.Results
-		expectedStates      []*state.State
+		expectedStates      []*state.AlertInstance
 		expectedAnnotations int
 	}
 
@@ -436,7 +436,7 @@ func TestProcessEvalResults(t *testing.T) {
 					newResult(eval.WithState(eval.Normal), eval.WithLabels(labels1)),
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -458,7 +458,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -491,7 +491,7 @@ func TestProcessEvalResults(t *testing.T) {
 					newResult(eval.WithState(eval.Normal), eval.WithLabels(labels1)),
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -515,7 +515,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -546,7 +546,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 2,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -571,7 +571,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 2,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -600,7 +600,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 2,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -632,7 +632,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 4,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -667,7 +667,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 3, // Normal -> Pending, Pending -> NoData, NoData -> Pending
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -698,7 +698,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 3,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -723,7 +723,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:            labels["system + rule + labels1"],
 					ResultFingerprint: labels1.Fingerprint(),
@@ -748,7 +748,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -772,7 +772,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -797,7 +797,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -832,7 +832,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -878,7 +878,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -912,7 +912,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 1,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -948,7 +948,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 2,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -979,7 +979,7 @@ func TestProcessEvalResults(t *testing.T) {
 					})),
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels: mergeLabels(systemLabels, data.Labels{
 						"cluster":   "us-central-1",
@@ -1018,7 +1018,7 @@ func TestProcessEvalResults(t *testing.T) {
 					newResult(eval.WithState(eval.Alerting), eval.WithLabels(data.Labels{})),
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule"],
 					ResultFingerprint:  data.Labels{}.Fingerprint(),
@@ -1046,7 +1046,7 @@ func TestProcessEvalResults(t *testing.T) {
 						})),
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:            labels["system + rule"],
 					ResultFingerprint: data.Labels{}.Fingerprint(),
@@ -1081,7 +1081,7 @@ func TestProcessEvalResults(t *testing.T) {
 						})),
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:            labels["system + rule"],
 					ResultFingerprint: data.Labels{}.Fingerprint(),
@@ -1116,7 +1116,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 2,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -1150,7 +1150,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 3,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -1188,7 +1188,7 @@ func TestProcessEvalResults(t *testing.T) {
 				},
 			},
 			expectedAnnotations: 4,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					Labels:             labels["system + rule + labels1"],
 					ResultFingerprint:  labels1.Fingerprint(),
@@ -1247,7 +1247,7 @@ func TestProcessEvalResults(t *testing.T) {
 			states := st.GetStatesForRuleUID(tc.alertRule.OrgID, tc.alertRule.UID)
 			assert.Len(t, states, len(tc.expectedStates))
 
-			expectedStates := make(map[data.Fingerprint]*state.State, len(tc.expectedStates))
+			expectedStates := make(map[data.Fingerprint]*state.AlertInstance, len(tc.expectedStates))
 			for _, s := range tc.expectedStates {
 				// patch all optional fields of the expected state
 				setCacheID(s)
@@ -1282,7 +1282,7 @@ func TestProcessEvalResults(t *testing.T) {
 			}
 
 			if len(expectedStates) > 0 {
-				vals := make([]state.State, 0, len(expectedStates))
+				vals := make([]state.AlertInstance, 0, len(expectedStates))
 				for _, s := range expectedStates {
 					vals = append(vals, *s)
 				}
@@ -1475,7 +1475,7 @@ func TestStaleResultsHandler(t *testing.T) {
 	testCases := []struct {
 		desc               string
 		evalResults        []eval.Results
-		expectedStates     []*state.State
+		expectedStates     []*state.AlertInstance
 		startingStateCount int
 		finalStateCount    int
 	}{
@@ -1490,7 +1490,7 @@ func TestStaleResultsHandler(t *testing.T) {
 					},
 				},
 			},
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					AlertRuleUID:    rule.UID,
 					OrgID:           1,
@@ -1575,9 +1575,9 @@ func TestStaleResults(t *testing.T) {
 		return lbls.Fingerprint()
 	}
 
-	checkExpectedStates := func(t *testing.T, actual []*state.State, expected map[data.Fingerprint]struct{}) map[data.Fingerprint]*state.State {
+	checkExpectedStates := func(t *testing.T, actual []*state.AlertInstance, expected map[data.Fingerprint]struct{}) map[data.Fingerprint]*state.AlertInstance {
 		t.Helper()
-		result := make(map[data.Fingerprint]*state.State)
+		result := make(map[data.Fingerprint]*state.AlertInstance)
 		require.Len(t, actual, len(expected))
 		for _, currentState := range actual {
 			_, ok := expected[currentState.CacheID]
@@ -1661,7 +1661,7 @@ func TestStaleResults(t *testing.T) {
 			if s.CacheID == state1 {
 				continue
 			}
-			assert.Equal(t, eval.Normal, s.State.EvaluationState)
+			assert.Equal(t, eval.Normal, s.AlertInstance.EvaluationState)
 			assert.Equal(t, models.StateReasonMissingSeries, s.StateReason)
 			assert.Equal(t, clk.Now(), s.EndsAt)
 			if s.CacheID == state2 {
@@ -1738,7 +1738,7 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 		desc          string
 		instanceStore state.InstanceStore
 
-		expectedStates []*state.State
+		expectedStates []*state.AlertInstance
 
 		startingStateCacheCount int
 		finalStateCacheCount    int
@@ -1748,7 +1748,7 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 		{
 			desc:          "all states/instances are removed from cache and DB",
 			instanceStore: ng.InstanceStore,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					AlertRuleUID:       rule.UID,
 					OrgID:              1,
@@ -1774,7 +1774,7 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		expectedStatesMap := make(map[data.Fingerprint]*state.State, len(tc.expectedStates))
+		expectedStatesMap := make(map[data.Fingerprint]*state.AlertInstance, len(tc.expectedStates))
 		for _, expectedState := range tc.expectedStates {
 			s := setCacheID(expectedState)
 			expectedStatesMap[s.CacheID] = s
@@ -1814,7 +1814,7 @@ func TestDeleteStateByRuleUID(t *testing.T) {
 				oldState := expectedStatesMap[s.CacheID]
 				assert.Equal(t, oldState.EvaluationState, s.PreviousState)
 				assert.Equal(t, oldState.StateReason, s.PreviousStateReason)
-				assert.Equal(t, eval.Normal, s.State.EvaluationState)
+				assert.Equal(t, eval.Normal, s.AlertInstance.EvaluationState)
 				assert.Equal(t, expectedReason, s.StateReason)
 				if oldState.EvaluationState == eval.Normal {
 					assert.Equal(t, oldState.StartsAt, s.StartsAt)
@@ -1884,7 +1884,7 @@ func TestResetStateByRuleUID(t *testing.T) {
 		desc          string
 		instanceStore state.InstanceStore
 
-		expectedStates []*state.State
+		expectedStates []*state.AlertInstance
 
 		startingStateCacheCount  int
 		finalStateCacheCount     int
@@ -1895,7 +1895,7 @@ func TestResetStateByRuleUID(t *testing.T) {
 		{
 			desc:          "all states/instances are removed from cache and DB and saved in historian",
 			instanceStore: ng.InstanceStore,
-			expectedStates: []*state.State{
+			expectedStates: []*state.AlertInstance{
 				{
 					AlertRuleUID:       rule.UID,
 					OrgID:              1,
@@ -1958,7 +1958,7 @@ func TestResetStateByRuleUID(t *testing.T) {
 				oldState := expectedStatesMap[s.CacheID]
 				assert.Equal(t, oldState.EvaluationState, s.PreviousState)
 				assert.Equal(t, oldState.StateReason, s.PreviousStateReason)
-				assert.Equal(t, eval.Normal, s.State.EvaluationState)
+				assert.Equal(t, eval.Normal, s.AlertInstance.EvaluationState)
 				assert.Equal(t, models.StateReasonPaused, s.StateReason)
 				if oldState.EvaluationState == eval.Normal {
 					assert.Equal(t, oldState.StartsAt, s.StartsAt)
@@ -1987,7 +1987,7 @@ func TestResetStateByRuleUID(t *testing.T) {
 	}
 }
 
-func setCacheID(s *state.State) *state.State {
+func setCacheID(s *state.AlertInstance) *state.AlertInstance {
 	if s.CacheID != 0 {
 		return s
 	}
@@ -1995,8 +1995,8 @@ func setCacheID(s *state.State) *state.State {
 	return s
 }
 
-func stateSliceToMap(states []*state.State) map[data.Fingerprint]*state.State {
-	result := make(map[data.Fingerprint]*state.State, len(states))
+func stateSliceToMap(states []*state.AlertInstance) map[data.Fingerprint]*state.AlertInstance {
+	result := make(map[data.Fingerprint]*state.AlertInstance, len(states))
 	for _, s := range states {
 		setCacheID(s)
 		result[s.CacheID] = s

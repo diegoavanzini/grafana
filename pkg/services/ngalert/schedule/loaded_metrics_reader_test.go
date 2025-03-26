@@ -15,7 +15,7 @@ import (
 func TestLoadedResultsFromRuleState(t *testing.T) {
 	rule := ngmodels.RuleGen.GenerateRef()
 	p := &FakeRuleStateProvider{
-		map[ngmodels.AlertRuleKey][]*state.State{
+		map[ngmodels.AlertRuleKey][]*state.AlertInstance{
 			rule.GetKey(): {
 				{EvaluationState: eval.Alerting, ResultFingerprint: data.Fingerprint(1)},
 				{EvaluationState: eval.Pending, ResultFingerprint: data.Fingerprint(2)},
@@ -54,10 +54,10 @@ func TestLoadedResultsFromRuleState(t *testing.T) {
 }
 
 type FakeRuleStateProvider struct {
-	states map[ngmodels.AlertRuleKey][]*state.State
+	states map[ngmodels.AlertRuleKey][]*state.AlertInstance
 }
 
-func (f FakeRuleStateProvider) GetStatesForRuleUID(orgID int64, UID string) []*state.State {
+func (f FakeRuleStateProvider) GetStatesForRuleUID(orgID int64, UID string) []*state.AlertInstance {
 	return f.states[ngmodels.AlertRuleKey{
 		OrgID: orgID,
 		UID:   UID,

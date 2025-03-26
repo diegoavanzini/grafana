@@ -28,8 +28,8 @@ type takeImageFn func(reason string) *ngModels.Image
 
 // AlertInstanceManager defines the interface for querying the current alert instances.
 type AlertInstanceManager interface {
-	GetAll(orgID int64) []*State
-	GetStatesForRuleUID(orgID int64, alertRuleUID string) []*State
+	GetAll(orgID int64) []*AlertInstance
+	GetStatesForRuleUID(orgID int64, alertRuleUID string) []*AlertInstance
 }
 
 type StatePersister interface {
@@ -196,7 +196,7 @@ func (st *Manager) Warm(ctx context.Context, orgReader OrgReader, rulesReader Ru
 				}
 				resultFp = data.Fingerprint(fp)
 			}
-			state := &State{
+			state := &AlertInstance{
 				AlertRuleUID:         entry.RuleUID,
 				OrgID:                entry.RuleOrgID,
 				CacheID:              cacheID,
@@ -220,7 +220,7 @@ func (st *Manager) Warm(ctx context.Context, orgReader OrgReader, rulesReader Ru
 	logger.Info("State cache has been initialized", "states", statesCount, "duration", time.Since(startTime))
 }
 
-func (st *Manager) Get(orgID int64, alertRuleUID string, stateId data.Fingerprint) *State {
+func (st *Manager) Get(orgID int64, alertRuleUID string, stateId data.Fingerprint) *AlertInstance {
 	return st.cache.get(orgID, alertRuleUID, stateId)
 }
 
@@ -257,7 +257,7 @@ func (st *Manager) DeleteStateByRuleUID(ctx context.Context, ruleKey ngModels.Al
 		s.LastEvaluationTime = now
 		s.Values = map[string]float64{}
 		transitions = append(transitions, StateTransition{
-			State:               s,
+			AlertInstance:       s,
 			PreviousState:       oldState,
 			PreviousStateReason: oldReason,
 		})
@@ -275,7 +275,7 @@ func (st *Manager) DeleteStateByRuleUID(ctx context.Context, ruleKey ngModels.Al
 	return transitions
 }
 
-func (st *Manager) ForgetStateByRuleUID(ctx context.Context, ruleKey ngModels.AlertRuleKeyWithGroup) []*State {
+func (st *Manager) ForgetStateByRuleUID(ctx context.Context, ruleKey ngModels.AlertRuleKeyWithGroup) []*AlertInstance {
 	logger := st.log.FromContext(ctx)
 	logger.Debug("Removing rule state from cache")
 
@@ -463,7 +463,7 @@ func (st *Manager) setNextStateForAll(alertRule *ngModels.AlertRule, result eval
 	currentStates := st.cache.getStatesForRuleUID(alertRule.OrgID, alertRule.UID)
 	transitions := make([]StateTransition, 0, len(currentStates))
 	updated := ruleStates{
-		states: make(map[data.Fingerprint]*State, len(currentStates)),
+		states: make(map[data.Fingerprint]*AlertInstance, len(currentStates)),
 	}
 	for _, currentState := range currentStates {
 		start := st.clock.Now()
@@ -479,11 +479,11 @@ func (st *Manager) setNextStateForAll(alertRule *ngModels.AlertRule, result eval
 	return transitions
 }
 
-func (st *Manager) GetAll(orgID int64) []*State {
+func (st *Manager) GetAll(orgID int64) []*AlertInstance {
 	allStates := st.cache.getAll(orgID)
 	return allStates
 }
-func (st *Manager) GetStatesForRuleUID(orgID int64, alertRuleUID string) []*State {
+func (st *Manager) GetStatesForRuleUID(orgID int64, alertRuleUID string) []*AlertInstance {
 	return st.cache.getStatesForRuleUID(orgID, alertRuleUID)
 }
 
@@ -492,7 +492,7 @@ func (st *Manager) GetStatusForRuleUID(orgID int64, alertRuleUID string) ngModel
 	return StatesToRuleStatus(states)
 }
 
-func (st *Manager) Put(states []*State) {
+func (st *Manager) Put(states []*AlertInstance) {
 	for _, s := range states {
 		st.cache.set(s)
 	}
@@ -520,7 +520,7 @@ func translateInstanceState(state ngModels.InstanceStateType) eval.State {
 func (st *Manager) deleteStaleStatesFromCache(logger log.Logger, evaluatedAt time.Time, alertRule *ngModels.AlertRule, takeImageFn takeImageFn) []StateTransition {
 	// If we are removing two or more stale series it makes sense to share the resolved image as the alert rule is the same.
 	// TODO: We will need to change this when we support images without screenshots as each series will have a different image
-	staleStates := st.cache.deleteRuleStates(alertRule.GetKey(), func(s *State) bool {
+	staleStates := st.cache.deleteRuleStates(alertRule.GetKey(), func(s *AlertInstance) bool {
 		return stateIsStale(evaluatedAt, s.LastEvaluationTime, alertRule.IntervalSeconds, alertRule.GetMissingSeriesEvalsToResolve())
 	})
 	resolvedStates := make([]StateTransition, 0, len(staleStates))
@@ -544,7 +544,7 @@ func (st *Manager) deleteStaleStatesFromCache(logger log.Logger, evaluatedAt tim
 		}
 
 		record := StateTransition{
-			State:               s,
+			AlertInstance:       s,
 			PreviousState:       oldState,
 			PreviousStateReason: oldReason,
 		}
@@ -567,7 +567,7 @@ func stateIsStale(evaluatedAt time.Time, lastEval time.Time, intervalSeconds int
 	return evaluatedAt.Sub(lastEval) >= resolveIfMissingDuration
 }
 
-func StatesToRuleStatus(states []*State) ngModels.RuleStatus {
+func StatesToRuleStatus(states []*AlertInstance) ngModels.RuleStatus {
 	status := ngModels.RuleStatus{
 		Health:              "ok",
 		LastError:           nil,

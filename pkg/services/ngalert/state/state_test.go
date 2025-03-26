@@ -31,17 +31,17 @@ func TestSetAlerting(t *testing.T) {
 	mock := clock.NewMock()
 	tests := []struct {
 		name     string
-		state    State
+		state    AlertInstance
 		reason   string
 		startsAt time.Time
 		endsAt   time.Time
-		expected State
+		expected AlertInstance
 	}{{
 		name:     "state is set to Alerting",
 		reason:   "this is a reason",
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Alerting,
 			StateReason:     "this is a reason",
 			StartsAt:        mock.Now(),
@@ -49,14 +49,14 @@ func TestSetAlerting(t *testing.T) {
 		},
 	}, {
 		name: "previous state is removed",
-		state: State{
+		state: AlertInstance{
 			EvaluationState: eval.Normal,
 			StateReason:     "this is a reason",
 			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Alerting,
 			StartsAt:        mock.Now(),
 			EndsAt:          mock.Now().Add(time.Minute),
@@ -76,17 +76,17 @@ func TestSetPending(t *testing.T) {
 	mock := clock.NewMock()
 	tests := []struct {
 		name     string
-		state    State
+		state    AlertInstance
 		reason   string
 		startsAt time.Time
 		endsAt   time.Time
-		expected State
+		expected AlertInstance
 	}{{
 		name:     "state is set to Pending",
 		reason:   "this is a reason",
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Pending,
 			StateReason:     "this is a reason",
 			StartsAt:        mock.Now(),
@@ -94,14 +94,14 @@ func TestSetPending(t *testing.T) {
 		},
 	}, {
 		name: "previous state is removed",
-		state: State{
+		state: AlertInstance{
 			EvaluationState: eval.Pending,
 			StateReason:     "this is a reason",
 			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Pending,
 			StartsAt:        mock.Now(),
 			EndsAt:          mock.Now().Add(time.Minute),
@@ -121,17 +121,17 @@ func TestNormal(t *testing.T) {
 	mock := clock.NewMock()
 	tests := []struct {
 		name     string
-		state    State
+		state    AlertInstance
 		reason   string
 		startsAt time.Time
 		endsAt   time.Time
-		expected State
+		expected AlertInstance
 	}{{
 		name:     "state is set to Normal",
 		reason:   "this is a reason",
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Normal,
 			StateReason:     "this is a reason",
 			StartsAt:        mock.Now(),
@@ -139,14 +139,14 @@ func TestNormal(t *testing.T) {
 		},
 	}, {
 		name: "previous state is removed",
-		state: State{
+		state: AlertInstance{
 			EvaluationState: eval.Normal,
 			StateReason:     "this is a reason",
 			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Normal,
 			StartsAt:        mock.Now(),
 			EndsAt:          mock.Now().Add(time.Minute),
@@ -166,30 +166,30 @@ func TestNoData(t *testing.T) {
 	mock := clock.NewMock()
 	tests := []struct {
 		name     string
-		state    State
+		state    AlertInstance
 		reason   string
 		startsAt time.Time
 		endsAt   time.Time
-		expected State
+		expected AlertInstance
 	}{{
 		name:     "state is set to No Data",
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.NoData,
 			StartsAt:        mock.Now(),
 			EndsAt:          mock.Now().Add(time.Minute),
 		},
 	}, {
 		name: "previous state is removed",
-		state: State{
+		state: AlertInstance{
 			EvaluationState: eval.NoData,
 			StateReason:     "this is a reason",
 			Error:           errors.New("this is an error"),
 		},
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.NoData,
 			StartsAt:        mock.Now(),
 			EndsAt:          mock.Now().Add(time.Minute),
@@ -209,17 +209,17 @@ func TestSetError(t *testing.T) {
 	mock := clock.NewMock()
 	tests := []struct {
 		name     string
-		state    State
+		state    AlertInstance
 		startsAt time.Time
 		endsAt   time.Time
 		error    error
-		expected State
+		expected AlertInstance
 	}{{
 		name:     "state is set to Error",
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		error:    errors.New("this is an error"),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Error,
 			StateReason:     ngmodels.StateReasonError,
 			Error:           errors.New("this is an error"),
@@ -228,7 +228,7 @@ func TestSetError(t *testing.T) {
 		},
 	}, {
 		name: "previous state is removed",
-		state: State{
+		state: AlertInstance{
 			EvaluationState: eval.Error,
 			StateReason:     "this is a reason",
 			Error:           errors.New("this is an error"),
@@ -236,7 +236,7 @@ func TestSetError(t *testing.T) {
 		startsAt: mock.Now(),
 		endsAt:   mock.Now().Add(time.Minute),
 		error:    errors.New("this is another error"),
-		expected: State{
+		expected: AlertInstance{
 			EvaluationState: eval.Error,
 			StateReason:     ngmodels.StateReasonError,
 			Error:           errors.New("this is another error"),
@@ -259,13 +259,13 @@ func TestMaintain(t *testing.T) {
 	now := mock.Now()
 
 	// the interval is less than the resend interval of 30 seconds
-	s := State{EvaluationState: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
+	s := AlertInstance{EvaluationState: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
 	s.Maintain(10, now.Add(10*time.Second))
 	// 10 seconds + 4 x 30 seconds is 130 seconds
 	assert.Equal(t, now.Add(130*time.Second), s.EndsAt)
 
 	// the interval is above the resend interval of 30 seconds
-	s = State{EvaluationState: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
+	s = AlertInstance{EvaluationState: eval.Alerting, StartsAt: now, EndsAt: now.Add(time.Second)}
 	s.Maintain(60, now.Add(10*time.Second))
 	// 10 seconds + 4 x 60 seconds is 250 seconds
 	assert.Equal(t, now.Add(250*time.Second), s.EndsAt)
@@ -358,13 +358,13 @@ func TestNeedsSending(t *testing.T) {
 		resendDelay       time.Duration
 		resolvedRetention time.Duration
 		expected          bool
-		testState         *State
+		testState         *AlertInstance
 	}{
 		{
 			name:        "state: alerting and LastSentAt before LastEvaluationTime + ResendDelay",
 			resendDelay: 1 * time.Minute,
 			expected:    true,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-2 * time.Minute)),
@@ -374,7 +374,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: alerting and LastSentAt after LastEvaluationTime + ResendDelay",
 			resendDelay: 1 * time.Minute,
 			expected:    false,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime),
@@ -384,7 +384,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: alerting and LastSentAt equals LastEvaluationTime + ResendDelay",
 			resendDelay: 1 * time.Minute,
 			expected:    true,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -394,7 +394,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: pending",
 			resendDelay: 1 * time.Minute,
 			expected:    false,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState: eval.Pending,
 			},
 		},
@@ -402,7 +402,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: alerting and ResendDelay is zero",
 			resendDelay: 0 * time.Minute,
 			expected:    true,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Alerting,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime),
@@ -412,7 +412,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: normal + resolved should send without waiting if ResolvedAt > LastSentAt",
 			resendDelay: 1 * time.Minute,
 			expected:    true,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime),
 				LastEvaluationTime: evaluationTime,
@@ -424,7 +424,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay:       1 * time.Minute,
 			resolvedRetention: 15 * time.Minute,
 			expected:          true,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime.Add(-2 * time.Minute)),
 				LastEvaluationTime: evaluationTime,
@@ -436,7 +436,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay:       2 * time.Minute,
 			resolvedRetention: 15 * time.Minute,
 			expected:          false,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime.Add(-2 * time.Minute)),
 				LastEvaluationTime: evaluationTime,
@@ -448,7 +448,7 @@ func TestNeedsSending(t *testing.T) {
 			resendDelay:       1 * time.Minute,
 			resolvedRetention: 15 * time.Minute,
 			expected:          false,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(evaluationTime.Add(-16 * time.Minute)),
 				LastEvaluationTime: evaluationTime,
@@ -459,7 +459,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: normal but not resolved does not send after a minute",
 			resendDelay: 1 * time.Minute,
 			expected:    false,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Normal,
 				ResolvedAt:         util.Pointer(time.Time{}),
 				LastEvaluationTime: evaluationTime,
@@ -470,7 +470,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: no-data, needs to be re-sent",
 			expected:    true,
 			resendDelay: 1 * time.Minute,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.NoData,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -480,7 +480,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: no-data, should not be re-sent",
 			expected:    false,
 			resendDelay: 1 * time.Minute,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.NoData,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-time.Duration(rand.Int63n(59)+1) * time.Second)),
@@ -490,7 +490,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: error, needs to be re-sent",
 			expected:    true,
 			resendDelay: 1 * time.Minute,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Error,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-1 * time.Minute)),
@@ -500,7 +500,7 @@ func TestNeedsSending(t *testing.T) {
 			name:        "state: error, should not be re-sent",
 			expected:    false,
 			resendDelay: 1 * time.Minute,
-			testState: &State{
+			testState: &AlertInstance{
 				EvaluationState:    eval.Error,
 				LastEvaluationTime: evaluationTime,
 				LastSentAt:         util.Pointer(evaluationTime.Add(-time.Duration(rand.Int63n(59)+1) * time.Second)),
@@ -516,8 +516,8 @@ func TestNeedsSending(t *testing.T) {
 }
 
 func TestGetLastEvaluationValuesForCondition(t *testing.T) {
-	genState := func(latestResult *Evaluation) *State {
-		return &State{
+	genState := func(latestResult *Evaluation) *AlertInstance {
+		return &AlertInstance{
 			LatestResult: latestResult,
 		}
 	}

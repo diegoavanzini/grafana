@@ -175,7 +175,7 @@ func (r *LokiHistorianStore) annotationsFromStream(stream historian.Stream, ac a
 			historymodel.RuleMeta{
 				Title: entry.RuleTitle,
 			},
-			transition.State,
+			transition.AlertInstance,
 		)
 
 		items = append(items, &annotations.ItemDTO{
@@ -263,7 +263,7 @@ func buildTransition(entry historian.LokiEntry) (*state.StateTransition, error) 
 	}
 
 	return &state.StateTransition{
-		State: &state.State{
+		AlertInstance: &state.AlertInstance{
 			EvaluationState: curState,
 			StateReason:     curStateReason,
 			Values:          v,

@@ -340,7 +340,7 @@ func randomTimeInPast() time.Time {
 func randomTransition(from, to eval.State) StateTransition {
 	return StateTransition{
 		PreviousState: from,
-		State: &State{
+		AlertInstance: &AlertInstance{
 			EvaluationState:    to,
 			AlertRuleUID:       util.GenerateShortUID(),
 			StartsAt:           time.Now(),

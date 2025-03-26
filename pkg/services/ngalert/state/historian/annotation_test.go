@@ -100,7 +100,7 @@ func TestAnnotationHistorian(t *testing.T) {
 	t.Run("writing state transitions as annotations succeeds", func(t *testing.T) {
 		anns := createTestAnnotationBackendSut(t)
 		rule := createTestRule()
-		states := singleFromNormal(&state.State{
+		states := singleFromNormal(&state.AlertInstance{
 			EvaluationState: eval.Alerting,
 			Labels:          data.Labels{"a": "b"},
 		})
@@ -116,7 +116,7 @@ func TestAnnotationHistorian(t *testing.T) {
 		anns := createTestAnnotationBackendSutWithMetrics(t, met)
 		errAnns := createFailingAnnotationSut(t, met)
 		rule := createTestRule()
-		states := singleFromNormal(&state.State{
+		states := singleFromNormal(&state.AlertInstance{
 			EvaluationState: eval.Alerting,
 			Labels:          data.Labels{"a": "b"},
 		})
@@ -211,7 +211,7 @@ func TestBuildAnnotations(t *testing.T) {
 		logger := log.NewNopLogger()
 		rule := history_model.RuleMeta{}
 		states := []state.StateTransition{makeStateTransition()}
-		states[0].State.Values = nil
+		states[0].AlertInstance.Values = nil
 
 		items := buildAnnotations(rule, states, logger)
 
@@ -224,7 +224,7 @@ func TestBuildAnnotations(t *testing.T) {
 		logger := log.NewNopLogger()
 		rule := history_model.RuleMeta{}
 		states := []state.StateTransition{makeStateTransition()}
-		states[0].State.Values = map[string]float64{"a": 1.0, "b": 2.0}
+		states[0].AlertInstance.Values = map[string]float64{"a": 1.0, "b": 2.0}
 
 		items := buildAnnotations(rule, states, logger)
 
@@ -242,7 +242,7 @@ func TestBuildAnnotations(t *testing.T) {
 		logger := log.NewNopLogger()
 		rule := history_model.RuleMeta{}
 		states := []state.StateTransition{makeStateTransition()}
-		states[0].State.Values = map[string]float64{"nan": math.NaN(), "inf": math.Inf(1), "ninf": math.Inf(-1)}
+		states[0].AlertInstance.Values = map[string]float64{"nan": math.NaN(), "inf": math.Inf(1), "ninf": math.Inf(-1)}
 
 		items := buildAnnotations(rule, states, logger)
 
@@ -254,7 +254,7 @@ func TestBuildAnnotations(t *testing.T) {
 
 func makeStateTransition() state.StateTransition {
 	return state.StateTransition{
-		State: &state.State{
+		AlertInstance: &state.AlertInstance{
 			EvaluationState: eval.Alerting,
 		},
 		PreviousState: eval.Normal,

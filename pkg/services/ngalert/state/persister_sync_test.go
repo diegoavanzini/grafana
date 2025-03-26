@@ -47,7 +47,7 @@ func TestSyncPersister_saveAlertStates(t *testing.T) {
 	for _, fromState := range allStates {
 		for i, toState := range allStates {
 			tr := StateTransition{
-				State: &State{
+				AlertInstance: &AlertInstance{
 					EvaluationState: toState.State,
 					StateReason:     toState.Reason,
 					Labels:          ngmodels.GenerateAlertLabels(5, fmt.Sprintf("%d--", i)),
@@ -79,7 +79,7 @@ func TestSyncPersister_saveAlertStates(t *testing.T) {
 		assert.Len(t, transitionToKey, len(savedKeys))
 
 		for key, tr := range transitionToKey {
-			assert.Containsf(t, savedKeys, key, "state %s (%s) was not saved but should be", tr.State.EvaluationState, tr.StateReason)
+			assert.Containsf(t, savedKeys, key, "state %s (%s) was not saved but should be", tr.AlertInstance.EvaluationState, tr.StateReason)
 		}
 	})
 
@@ -99,10 +99,10 @@ func TestSyncPersister_saveAlertStates(t *testing.T) {
 			savedKeys[saved.AlertInstanceKey] = saved
 		}
 		for key, tr := range transitionToKey {
-			if tr.State.EvaluationState == eval.Normal && tr.StateReason == "" && tr.PreviousState == eval.Normal && tr.PreviousStateReason == "" {
+			if tr.AlertInstance.EvaluationState == eval.Normal && tr.StateReason == "" && tr.PreviousState == eval.Normal && tr.PreviousStateReason == "" {
 				continue
 			}
-			assert.Containsf(t, savedKeys, key, "state %s (%s) was not saved but should be", tr.State.EvaluationState, tr.StateReason)
+			assert.Containsf(t, savedKeys, key, "state %s (%s) was not saved but should be", tr.AlertInstance.EvaluationState, tr.StateReason)
 		}
 	})
 
@@ -115,7 +115,7 @@ func TestSyncPersister_saveAlertStates(t *testing.T) {
 			MaxStateSaveConcurrency: 1,
 		})
 
-		state := &State{
+		state := &AlertInstance{
 			OrgID:             rand.Int63(),
 			AlertRuleUID:      util.GenerateShortUID(),
 			CacheID:           data.Fingerprint(rand.Int63()),
@@ -156,7 +156,7 @@ func TestSyncPersister_saveAlertStates(t *testing.T) {
 		}
 
 		transition := StateTransition{
-			State:               state,
+			AlertInstance:       state,
 			PreviousState:       eval.Normal,
 			PreviousStateReason: util.GenerateShortUID(),
 		}

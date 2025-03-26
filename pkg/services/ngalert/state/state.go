@@ -23,7 +23,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/screenshot"
 )
 
-type State struct {
+type AlertInstance struct {
 	OrgID        int64
 	AlertRuleUID string
 
@@ -77,13 +77,13 @@ type State struct {
 	EvaluationDuration   time.Duration
 }
 
-func newState(ctx context.Context, log log.Logger, alertRule *models.AlertRule, result eval.Result, extraLabels data.Labels, externalURL *url.URL) *State {
+func newState(ctx context.Context, log log.Logger, alertRule *models.AlertRule, result eval.Result, extraLabels data.Labels, externalURL *url.URL) *AlertInstance {
 	lbs, annotations := expandAnnotationsAndLabels(ctx, log, alertRule, result, extraLabels, externalURL)
 
 	cacheID := lbs.Fingerprint()
 	// For new states, we set StartsAt & EndsAt to EvaluatedAt as this is the
 	// expected value for a Normal state during state transition.
-	return &State{
+	return &AlertInstance{
 		OrgID:                alertRule.OrgID,
 		AlertRuleUID:         alertRule.UID,
 		CacheID:              cacheID,
@@ -107,13 +107,13 @@ func newState(ctx context.Context, log log.Logger, alertRule *models.AlertRule, 
 }
 
 // Copy creates a shallow copy of the State except for labels and annotations.
-func (a *State) Copy() *State {
+func (a *AlertInstance) Copy() *AlertInstance {
 	// Deep copy annotations and labels
 	annotationsCopy := make(map[string]string, len(a.Annotations))
 	maps.Copy(annotationsCopy, a.Annotations)
 	labelsCopy := make(data.Labels, len(a.Labels))
 	maps.Copy(labelsCopy, a.Labels)
-	return &State{
+	return &AlertInstance{
 		OrgID:                a.OrgID,
 		AlertRuleUID:         a.AlertRuleUID,
 		CacheID:              a.CacheID,
@@ -136,14 +136,14 @@ func (a *State) Copy() *State {
 	}
 }
 
-func (a *State) GetRuleKey() models.AlertRuleKey {
+func (a *AlertInstance) GetRuleKey() models.AlertRuleKey {
 	return models.AlertRuleKey{
 		OrgID: a.OrgID,
 		UID:   a.AlertRuleUID,
 	}
 }
 
-func (a *State) GetAlertInstanceKey() (models.AlertInstanceKey, error) {
+func (a *AlertInstance) GetAlertInstanceKey() (models.AlertInstanceKey, error) {
 	instanceLabels := models.InstanceLabels(a.Labels)
 	_, labelsHash, err := instanceLabels.StringAndHash()
 	if err != nil {
@@ -153,7 +153,7 @@ func (a *State) GetAlertInstanceKey() (models.AlertInstanceKey, error) {
 }
 
 // SetAlerting sets the state to Alerting. It changes both the start and end time.
-func (a *State) SetAlerting(reason string, startsAt, endsAt time.Time) {
+func (a *AlertInstance) SetAlerting(reason string, startsAt, endsAt time.Time) {
 	a.EvaluationState = eval.Alerting
 	a.StateReason = reason
 	a.StartsAt = startsAt
@@ -162,7 +162,7 @@ func (a *State) SetAlerting(reason string, startsAt, endsAt time.Time) {
 }
 
 // SetPending sets the state to Pending. It changes both the start and end time.
-func (a *State) SetPending(reason string, startsAt, endsAt time.Time) {
+func (a *AlertInstance) SetPending(reason string, startsAt, endsAt time.Time) {
 	a.EvaluationState = eval.Pending
 	a.StateReason = reason
 	a.StartsAt = startsAt
@@ -171,7 +171,7 @@ func (a *State) SetPending(reason string, startsAt, endsAt time.Time) {
 }
 
 // SetRecovering sets the state to Recovering. It changes both the start and end time.
-func (a *State) SetRecovering(reason string, startsAt, endsAt time.Time) {
+func (a *AlertInstance) SetRecovering(reason string, startsAt, endsAt time.Time) {
 	a.EvaluationState = eval.Recovering
 	a.StateReason = reason
 	a.StartsAt = startsAt
@@ -180,7 +180,7 @@ func (a *State) SetRecovering(reason string, startsAt, endsAt time.Time) {
 }
 
 // SetNoData sets the state to NoData. It changes both the start and end time.
-func (a *State) SetNoData(reason string, startsAt, endsAt time.Time) {
+func (a *AlertInstance) SetNoData(reason string, startsAt, endsAt time.Time) {
 	a.EvaluationState = eval.NoData
 	a.StateReason = reason
 	a.StartsAt = startsAt
@@ -189,7 +189,7 @@ func (a *State) SetNoData(reason string, startsAt, endsAt time.Time) {
 }
 
 // SetError sets the state to Error. It changes both the start and end time.
-func (a *State) SetError(err error, startsAt, endsAt time.Time) {
+func (a *AlertInstance) SetError(err error, startsAt, endsAt time.Time) {
 	a.EvaluationState = eval.Error
 	a.StateReason = models.StateReasonError
 	a.StartsAt = startsAt
@@ -198,7 +198,7 @@ func (a *State) SetError(err error, startsAt, endsAt time.Time) {
 }
 
 // SetNormal sets the state to Normal. It changes both the start and end time.
-func (a *State) SetNormal(reason string, startsAt, endsAt time.Time) {
+func (a *AlertInstance) SetNormal(reason string, startsAt, endsAt time.Time) {
 	a.EvaluationState = eval.Normal
 	a.StateReason = reason
 	a.StartsAt = startsAt
@@ -207,14 +207,14 @@ func (a *State) SetNormal(reason string, startsAt, endsAt time.Time) {
 }
 
 // Maintain updates the end time using the most recent evaluation.
-func (a *State) Maintain(interval int64, evaluatedAt time.Time) {
+func (a *AlertInstance) Maintain(interval int64, evaluatedAt time.Time) {
 	a.EndsAt = nextEndsTime(interval, evaluatedAt)
 }
 
 // AddErrorInformation adds annotations to the state to indicate that an error occurred.
 // If addDatasourceInfoToLabels is true, the ref_id and datasource_uid are added to the labels,
 // otherwise, they are added to the annotations.
-func (a *State) AddErrorInformation(err error, rule *models.AlertRule, addDatasourceInfoToLabels bool) {
+func (a *AlertInstance) AddErrorInformation(err error, rule *models.AlertRule, addDatasourceInfoToLabels bool) {
 	if err == nil {
 		return
 	}
@@ -246,7 +246,7 @@ func (a *State) AddErrorInformation(err error, rule *models.AlertRule, addDataso
 	}
 }
 
-func (a *State) SetNextValues(result eval.Result) {
+func (a *AlertInstance) SetNextValues(result eval.Result) {
 	const sentinel = float64(-1)
 
 	// We try to provide a reasonable object for Values in the event of nodata/error.
@@ -274,13 +274,13 @@ func (a *State) SetNextValues(result eval.Result) {
 
 // StateTransition describes the transition from one state to another.
 type StateTransition struct {
-	*State
+	*AlertInstance
 	PreviousState       eval.State
 	PreviousStateReason string
 }
 
 func (c StateTransition) Formatted() string {
-	return FormatStateAndReason(c.State.EvaluationState, c.State.StateReason)
+	return FormatStateAndReason(c.AlertInstance.EvaluationState, c.AlertInstance.StateReason)
 }
 
 func (c StateTransition) PreviousFormatted() string {
@@ -288,7 +288,7 @@ func (c StateTransition) PreviousFormatted() string {
 }
 
 func (c StateTransition) Changed() bool {
-	return c.PreviousState != c.State.EvaluationState || c.PreviousStateReason != c.State.StateReason
+	return c.PreviousState != c.AlertInstance.EvaluationState || c.PreviousStateReason != c.AlertInstance.StateReason
 }
 
 type StateTransitions []StateTransition
@@ -328,7 +328,7 @@ func NewEvaluationValues(m map[string]eval.NumberValueCapture) map[string]float6
 	return result
 }
 
-func resultNormal(state *State, rule *models.AlertRule, result eval.Result, logger log.Logger, reason string) {
+func resultNormal(state *AlertInstance, rule *models.AlertRule, result eval.Result, logger log.Logger, reason string) {
 	switch {
 	case state.EvaluationState == eval.Normal:
 		logger.Debug("Keeping state", "state", state.EvaluationState)
@@ -388,7 +388,7 @@ func resultNormal(state *State, rule *models.AlertRule, result eval.Result, logg
 	}
 }
 
-func resultAlerting(state *State, rule *models.AlertRule, result eval.Result, logger log.Logger, reason string) {
+func resultAlerting(state *AlertInstance, rule *models.AlertRule, result eval.Result, logger log.Logger, reason string) {
 	switch state.EvaluationState {
 	case eval.Alerting:
 		prevEndsAt := state.EndsAt
@@ -444,7 +444,7 @@ func resultAlerting(state *State, rule *models.AlertRule, result eval.Result, lo
 	}
 }
 
-func resultError(state *State, rule *models.AlertRule, result eval.Result, logger log.Logger) {
+func resultError(state *AlertInstance, rule *models.AlertRule, result eval.Result, logger log.Logger) {
 	handlerStr := "resultError"
 
 	switch rule.ExecErrState {
@@ -497,7 +497,7 @@ func resultError(state *State, rule *models.AlertRule, result eval.Result, logge
 	}
 }
 
-func resultNoData(state *State, rule *models.AlertRule, result eval.Result, logger log.Logger) {
+func resultNoData(state *AlertInstance, rule *models.AlertRule, result eval.Result, logger log.Logger) {
 	handlerStr := "resultNoData"
 
 	switch rule.NoDataState {
@@ -542,7 +542,7 @@ func resultNoData(state *State, rule *models.AlertRule, result eval.Result, logg
 	}
 }
 
-func resultKeepLast(state *State, rule *models.AlertRule, result eval.Result, logger log.Logger) {
+func resultKeepLast(state *AlertInstance, rule *models.AlertRule, result eval.Result, logger log.Logger) {
 	reason := models.ConcatReasons(result.State.String(), models.StateReasonKeepLast)
 
 	switch state.EvaluationState {
@@ -572,7 +572,7 @@ func resultKeepLast(state *State, rule *models.AlertRule, result eval.Result, lo
 // - The state has been resolved since the last notification.
 // - The state is firing and the last notification was sent at least resendDelay ago.
 // - The state was resolved within the resolvedRetention period, and the last notification was sent at least resendDelay ago.
-func (a *State) NeedsSending(resendDelay time.Duration, resolvedRetention time.Duration) bool {
+func (a *AlertInstance) NeedsSending(resendDelay time.Duration, resolvedRetention time.Duration) bool {
 	if a.EvaluationState == eval.Pending {
 		// We do not send notifications for pending states.
 		return false
@@ -594,7 +594,7 @@ func (a *State) NeedsSending(resendDelay time.Duration, resolvedRetention time.D
 	return a.LastSentAt == nil || !a.LastSentAt.Add(resendDelay).After(a.LastEvaluationTime)
 }
 
-func (a *State) Equals(b *State) bool {
+func (a *AlertInstance) Equals(b *AlertInstance) bool {
 	return a.AlertRuleUID == b.AlertRuleUID &&
 		a.OrgID == b.OrgID &&
 		a.CacheID == b.CacheID &&
@@ -618,7 +618,7 @@ func nextEndsTime(interval int64, evaluatedAt time.Time) time.Time {
 	return evaluatedAt.Add(4 * ends)
 }
 
-func (a *State) GetLabels(opts ...models.LabelOption) map[string]string {
+func (a *AlertInstance) GetLabels(opts ...models.LabelOption) map[string]string {
 	labels := a.Labels.Copy()
 
 	for _, opt := range opts {
@@ -628,7 +628,7 @@ func (a *State) GetLabels(opts ...models.LabelOption) map[string]string {
 	return labels
 }
 
-func (a *State) GetLastEvaluationValuesForCondition() map[string]float64 {
+func (a *AlertInstance) GetLastEvaluationValuesForCondition() map[string]float64 {
 	if a.LatestResult == nil {
 		return nil
 	}
@@ -646,7 +646,7 @@ func (a *State) GetLastEvaluationValuesForCondition() map[string]float64 {
 }
 
 // IsStale returns true if the state is stale, meaning that the state is ready to be evicted from the cache.
-func (a *State) IsStale() bool {
+func (a *AlertInstance) IsStale() bool {
 	return a.StateReason == models.StateReasonMissingSeries
 }
 
@@ -745,7 +745,7 @@ func GetRuleExtraLabels(l log.Logger, rule *models.AlertRule, folderTitle string
 	return extraLabels
 }
 
-func patch(newState, existingState *State, result eval.Result) {
+func patch(newState, existingState *AlertInstance, result eval.Result) {
 	// if there is existing state, copy over the current values that may be needed to determine the final state.
 	// TODO remove some unnecessary assignments below because they are overridden in setNextState
 	newState.EvaluationState = existingState.EvaluationState
@@ -788,7 +788,7 @@ func patch(newState, existingState *State, result eval.Result) {
 	}
 }
 
-func (a *State) transition(alertRule *models.AlertRule, result eval.Result, extraAnnotations data.Labels, logger log.Logger, takeImageFn takeImageFn) StateTransition {
+func (a *AlertInstance) transition(alertRule *models.AlertRule, result eval.Result, extraAnnotations data.Labels, logger log.Logger, takeImageFn takeImageFn) StateTransition {
 	a.LastEvaluationTime = result.EvaluatedAt
 	a.EvaluationDuration = result.EvaluationDuration
 	a.SetNextValues(result)
@@ -875,7 +875,7 @@ func (a *State) transition(alertRule *models.AlertRule, result eval.Result, extr
 	}
 
 	nextState := StateTransition{
-		State:               a,
+		AlertInstance:       a,
 		PreviousState:       oldState,
 		PreviousStateReason: oldReason,
 	}
